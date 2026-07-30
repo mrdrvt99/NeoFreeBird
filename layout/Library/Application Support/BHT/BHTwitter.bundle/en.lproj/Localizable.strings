@@ -167,6 +167,9 @@
 
 "DISABLE_IMMERSIVE_SCROLL_TITLE" = "No video feed scrolling";
 
+"DISABLE_VIDEO_DOCKING_TITLE" = "No video docking";
+"DISABLE_VIDEO_DOCKING_DETAIL" = "Prevents the PiP button from showing up when dragging videos out.";
+
 /*Twitter Blue*/
 "HIDE_PROMOTED_TITLE" = "No ads";
 "HIDE_PROMOTED_DETAIL" = "Remove all ads.";

@@ -112,3 +112,16 @@ static void nfb_swizzleSendMessageIfNeeded(NSURLSessionWebSocketTask* task) {
 }
 
 %end
+
+static void nfb_applyChatScreenTint(UIView* view) {
+    if ([BHTSettings boolForKey:@"tab_bar_theming"]) {
+        view.tintColor = CurrentAccentColor();
+    }
+}
+
+%hook TFNBarButtonItemButton
+-(void)didMoveToWindow {
+    %orig;
+    nfb_applyChatScreenTint(self);
+}
+%end

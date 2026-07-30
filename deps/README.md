@@ -31,6 +31,10 @@ backend instead of OpenSSL.
 The FFmpeg tag must stay in lockstep with the submodule (its vendored
 fftools sources compile against FFmpeg internals).
 
+## OpenTwitterSafariExtension
+https://github.com/BandarHL/OpenTwitterSafariExtension
+Adds a Safari extension to the app, allowing users to open Twitter links in the app instead of Safari. The extension is built as part of the main app target. This is because universal app links do not work in sideloaded apps.
+
 ## Machine prerequisites
 
 - **Theos** at `$THEOS`.

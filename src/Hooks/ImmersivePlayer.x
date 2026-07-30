@@ -102,6 +102,47 @@ static BOOL progressLabelAlphaFromState(id pluginView, CGFloat* outAlpha) {
 
 %end
 
+%hook _TtC14T1TwitterSwift24ImmersivePiPDropZoneView
+- (void)didMoveToWindow {
+    %orig;
+    if ([BHTSettings boolForKey:@"disable_video_docking"]) {
+        self.hidden = true;
+        self.alpha = 0.0;
+        self.userInteractionEnabled = false;
+        for (UIView* subview in self.subviews) {
+            subview.hidden = true;
+            subview.alpha = 0.0;
+            subview.userInteractionEnabled = false;
+        }
+    }
+}
+
+%end
+
+%hook T1ImmersiveViewController
+
+- (BOOL)isCurrentCardDockEligible {
+    if ([BHTSettings boolForKey:@"disable_video_docking"]) {
+        return NO;
+    }
+
+    return %orig;
+}
+
+%end
+
+%hook T1ImmersiveViewControllerV2
+
+- (BOOL)isCurrentCardDockEligible {
+    if ([BHTSettings boolForKey:@"disable_video_docking"]) {
+        return NO;
+    }
+
+    return %orig;
+}
+
+%end
+
 // MARK: - Disable Immersive Feed Scrolling
 
 // The card pan drives vertical paging between videos; blocking it lets the

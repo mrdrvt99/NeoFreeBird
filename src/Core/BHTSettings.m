@@ -161,6 +161,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"key": @"disable_immersive_scroll",
                         @"default": @NO,
                         @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"disable_video_docking",
+                        @"default": @NO,
+                        @"type": @"toggle"
                     }
                 ]
             },

@@ -135,6 +135,9 @@
                              animated:(BOOL)animated;
 @end
 
+@interface TFNBarButtonItemButton : UIButton
+@end
+
 @interface TFNTitleView : UIView
 + (instancetype)titleViewWithTitle:(NSString*)title
                           subtitle:(NSString*)subTitle;

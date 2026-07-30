@@ -789,6 +789,7 @@ static __thread BOOL DashPanelIDQuery = NO;
     if (!AccountIsGenuinelyPremium()) {
         claim(@15);
     }
+    claim(@20); // News
 
     return spoofed;
 }
