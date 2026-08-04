@@ -850,3 +850,22 @@ static __thread BOOL DashPanelIDQuery = NO;
 }
 
 %end
+
+// MARK: - Video upload quality
+%hook T1VideoQualityUploadSettings
+- (BOOL)shouldAllowFullHdVideoUpload:(long long)upload{
+    return [BHTSettings boolForKey:@"upload_full_hd_videos"] ? YES : %orig;
+}
+%end
+
+%hook T1LongerVideoUploadEnabledConfig
+
+- (BOOL)isUploadFullHDVideoEnabled {
+    return [BHTSettings boolForKey:@"upload_full_hd_videos"] ? YES : %orig;
+}
+
+- (BOOL)isUploadFullHDVideoEnabledByDefault {
+    return [BHTSettings boolForKey:@"upload_full_hd_videos"] ? YES : %orig;
+}
+
+%end

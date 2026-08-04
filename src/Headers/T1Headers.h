@@ -107,10 +107,17 @@
 @property (readonly, copy, nonatomic) NSString* username;
 @property (readonly, copy, nonatomic) NSString* bio;
 @property (readonly, copy, nonatomic) NSString* url;
+@property (readonly, nonatomic) NSNumber* tweetCount;
 @end
 
 @interface T1ProfileHeaderViewController : UIViewController
 @property (retain, nonatomic) T1ProfileUserViewModel* viewModel;
+@end
+
+// Hooked for unrounded tweet/post count
+@interface T1ProfileDisplayNormalMainContentProvider : NSObject
+@property (retain, nonatomic) T1ProfileUserViewModel* viewModel;
+- (id)_tweetsSubtitle;
 @end
 
 #pragma mark - Status views
@@ -189,6 +196,18 @@
 @property (nonatomic, readonly) NSArray* inlineMediaInfos;
 @end
 
+// DM voice message view (DMAttachments.AttachmentAssetAudioView). Not nested
+// inside MessageAttachmentView (confirmed on-device), so it gets its own
+// download context menu interaction rather than sharing that one -- see
+// MediaDownloads.x for how the playable URL is captured and why this wins
+// over the stock DM context menu on long-press.
+@interface _TtC13DMAttachments24AttachmentAssetAudioView : UIView
+@property (nonatomic, strong) UIContextMenuInteraction* voiceDownloadInteraction;
+@end
+
+@interface _TtC13DMAttachments24AttachmentAssetAudioView () <UIContextMenuInteractionDelegate>
+@end
+
 #pragma mark - Host & web views
 
 @interface T1HostViewController : UIViewController
@@ -234,15 +253,28 @@
 @interface _TtC14T1TwitterSwift24ImmersivePiPDropZoneView : UIView
 @end
 
+@interface _TtC14T1TwitterSwift17VideoControlsView : UIView
+- (void)timestampLabelTapped;
+@end
+
 @interface T1ConversationFooterTextView : TFNAttributedTextView
 @property (nonatomic, readonly) id viewModel;
 - (void)updateFooterTextView;
 @end
 
+@interface T1VideoQualityUploadSettings: NSObject
+- (_Bool)shouldAllowFullHdVideoUpload:(long long)upload;
+@end
 // Hooked for unrounded follower/following counts
 @interface T1ProfileFriendsFollowingViewModel : NSObject
 - (id)_t1_followCountTextWithLabel:(id)arg1
                      singularLabel:(id)arg2
                              count:(id)arg3
                        highlighted:(_Bool)arg4;
+@end
+
+
+@interface T1AnimatedLaunchScreenView : UIView
+- (void)layoutSubviews;
+- (void)traitCollectionDidChange:(id)change;
 @end

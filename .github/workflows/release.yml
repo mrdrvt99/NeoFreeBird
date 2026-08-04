@@ -20,7 +20,7 @@ on:
         type: string
       resource_pack_url:
         description: "Custom app icon pack (.ZIP) used for the branded IPA builds"
-        default: "https://files.catbox.moe/ft9nvn.zip"
+        default: "https://files.catbox.moe/p63f20.zip"
         required: false
         type: string
       commit_id:

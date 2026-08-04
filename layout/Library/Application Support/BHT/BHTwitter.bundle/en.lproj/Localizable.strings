@@ -128,6 +128,9 @@
 "HIDE_TYPING_INDICATOR_TITLE" = "Hide typing indicator";
 "HIDE_TYPING_INDICATOR_DETAIL" = "Stop sending the \"typing...\" indicator to other people in chats.";
 
+"DOWNLOAD_VOICE_MESSAGES_TITLE" = "Download voice messages";
+"DOWNLOAD_VOICE_MESSAGES_DETAIL" = "Save voice messages to your device after playing them (long-press on an audio message to download it).";
+
 /*Profiles*/
 "FOLLOW_CONFIRM_TITLE" = "Confirm follows";
 "FOLLOW_CONFIRM_DETAIL" = "Ask before following someone.";
@@ -146,6 +149,9 @@
 
 "RESTORE_FOLLOW_BUTTON_TITLE" = "No Subscribe button";
 "RESTORE_FOLLOW_BUTTON_DETAIL" = "Hides the Subscribe button on Tweets and in profiles.";
+
+"SHOW_UNROUNDED_COUNTS_TITLE" = "Show unrounded counts";
+"SHOW_UNROUNDED_COUNTS_DETAIL" = "Shows the exact number of followers, following, and tweets instead of rounding them to the nearest thousand or million.";
 
 /*Search*/
 "NO_HISTORY_TITLE" = "No search history";
@@ -178,6 +184,9 @@
 
 "DOWNLOAD_VIDEOS_TITLE" = "Download media";
 "DOWNLOAD_VIDEOS_DETAIL" = "Save videos or GIFs right from the Tweet overflow menu.";
+
+"UPLOAD_FULL_HD_VIDEOS_TITLE" = "Upload full HD videos";
+"UPLOAD_FULL_HD_VIDEOS_DETAIL" = "Unlock the ability to upload videos in 1080p.";
 
 "DIRECT_SAVE_TITLE" = "Save to Photos";
 "DIRECT_SAVE_DETAIL" = "Videos you save will go straight to your Photos app.";
@@ -250,6 +259,7 @@
 "COPY_PROFILE_INFO_MENU_OPTION_3" = "Copy name";
 "COPY_PROFILE_INFO_MENU_OPTION_4" = "Copy website";
 "COPY_PROFILE_INFO_MENU_OPTION_5" = "Copy location";
+"COPY_PROFILE_INFO_MENU_OPTION_6" = "Copy profile URL";
 
 /*Theme*/
 "THEME_SETTINGS_NAVIGATION_TITLE" = "Theme";

@@ -15,7 +15,7 @@ on:
         type: boolean
       resource_pack_url:
         description: "Override app icons (.ZIP)"
-        default: "https://files.catbox.moe/ft9nvn.zip"
+        default: "https://files.catbox.moe/p63f20.zip"
         required: false
         type: string
       commit_id:

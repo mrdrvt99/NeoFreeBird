@@ -23,7 +23,6 @@ import subprocess
 import sys
 import tarfile
 import tempfile
-import time
 import urllib.request
 from pathlib import Path
 
@@ -79,28 +78,6 @@ def _set_display_name_in_app(appdir):
     with open(plist, "rb") as f:
         data = plistlib.load(f)
     data["CFBundleDisplayName"] = "Twitter"
-    with open(plist, "wb") as f:
-        plistlib.dump(data, f, fmt=plistlib.FMT_BINARY)
-
-
-# --- bundle version ----------------------------------------------------------
-
-def _bump_bundle_version(appdir):
-    """Force CFBundleVersion to a fresh value on every branding run.
-
-    iOS caches a launch-screen snapshot per bundle id and can flash the old
-    one on top of freshly-changed assets (e.g. a re-themed launch screen)
-    until it decides the install is a new build. Bundle id and
-    CFBundleShortVersionString stay fixed across rebrands, so bump the build
-    number every time to force that invalidation.
-    """
-    plist = appdir / "Info.plist"
-    if not plist.is_file():
-        raise BrandingError("Branding: could not locate app Info.plist")
-
-    with open(plist, "rb") as f:
-        data = plistlib.load(f)
-    data["CFBundleVersion"] = str(int(time.time()))
     with open(plist, "wb") as f:
         plistlib.dump(data, f, fmt=plistlib.FMT_BINARY)
 
@@ -316,7 +293,6 @@ def apply_ipa_branding(ipa):
             _apply_resource_pack_to_app(appdir, workdir, resource_pack)
         if twitter_branding:
             _set_display_name_in_app(appdir)
-        _bump_bundle_version(appdir)
 
         # Repackage once. Use the zip binary (not zipfile) to preserve symlinks
         # and permissions exactly as the original build produced them.

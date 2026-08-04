@@ -249,6 +249,9 @@ xcuserdata/
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
 
+# Ignore debugging code
+src/Headers/CallerTrace.h
+
 # End of https://www.toptal.com/developers/gitignore/api/macos,python,theos-tweak,visualstudiocode,xcode
 
 .cursor/

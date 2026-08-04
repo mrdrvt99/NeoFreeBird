@@ -87,17 +87,20 @@ static BOOL progressLabelAlphaFromState(id pluginView, CGFloat* outAlpha) {
     return YES;
 }
 
-%hook _TtC14T1TwitterSwift32ImmersiveProgressLabelPluginView
 
-- (void)setAlpha:(CGFloat)alpha {
-    if ([BHTSettings boolForKey:@"restore_video_timestamp"]) {
-        CGFloat stateAlpha;
-        if (progressLabelAlphaFromState(self, &stateAlpha)) {
-            alpha = stateAlpha;
-        }
+static const void* kBHTRestoredTimestampKey = &kBHTRestoredTimestampKey;
+
+%hook _TtC14T1TwitterSwift17VideoControlsView
+
+- (void)layoutSubviews {
+    %orig;
+
+    if ([BHTSettings boolForKey:@"restore_video_timestamp"] &&
+        !objc_getAssociatedObject(self, kBHTRestoredTimestampKey)) {
+        objc_setAssociatedObject(self, kBHTRestoredTimestampKey, @YES,
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        [self timestampLabelTapped];
     }
-
-    %orig(alpha);
 }
 
 %end

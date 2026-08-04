@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.2.1",
+      "subtitle": "NeoFreeBird version 6.3.0",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -27,6 +27,15 @@
         "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/images/timeline/timeline5.png"
       ],
       "versions": [
+        {
+          "version": "12.9",
+          "buildVersion": "10",
+          "date": "2026-08-01T20:48:17Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.3.0-1/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.3.0_12.9.ipa",
+          "size": 224022916,
+          "minOSVersion": "14.0",
+          "localizedDescription": "New Features\n- Added option to directly copy user URL\n- Added option to hide the “typing” indicator in Chat\n- Added a toggle to show unrounded counts, as well as added the ability to show the unrounded number of tweets\n- The News tab is now hidden\n- Added an option to disable the gesture to dock videos\n\nFixes\n- Fixed tab labels being off-center\n- Fixed the “Restore Video Timestamp” option\n- Tinted some buttons in the Chat menu \n- Fixed the news button not being rebranded"
+        },
         {
           "version": "12.9",
           "buildVersion": "3",

@@ -202,6 +202,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"type": @"toggle"
                     },
                     @{
+                        @"key": @"show_unrounded_counts",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
                         @"key": @"restore_follow_button",
                         @"default": @NO,
                         @"type": @"toggle"
@@ -217,6 +222,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                 @"settings": @[
                     @{
                         @"key": @"hide_typing_indicator",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"download_voice_messages",
                         @"default": @NO,
                         @"type": @"toggle"
                     }
@@ -260,6 +270,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     @{
                         @"key": @"disable_sensitive_tweet_warnings",
                         @"default": @YES,
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"upload_full_hd_videos",
+                        @"default": @NO,
                         @"type": @"toggle"
                     },
                     @{

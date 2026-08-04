@@ -45,6 +45,7 @@ static char kCopyProviderKey;
         copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_1", @"news_stroke", viewModel.bio),
         copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_5", @"location_stroke", viewModel.location),
         copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_4", @"link", viewModel.url),
+        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_6", @"link", [NSString stringWithFormat:@"https://x.com/%@", viewModel.username]),
     ];
 }
 
@@ -137,6 +138,9 @@ static char kCopyProviderKey;
                              count:(NSNumber*)count
                        highlighted:(BOOL)highlighted {
     id original = %orig;
+    if (![BHTSettings boolForKey:@"show_unrounded_counts"]) {
+        return original;
+    }
 
     if (![count isKindOfClass:[NSNumber class]] ||
         ![original isKindOfClass:[NSAttributedString class]]) {
@@ -160,6 +164,41 @@ static char kCopyProviderKey;
     NSMutableAttributedString* expanded = [original mutableCopy];
     [expanded replaceCharactersInRange:range withString:fullCount];
     return [expanded copy];
+}
+
+%end
+
+// MARK: - Show unrounded tweet/post count
+
+%hook T1ProfileDisplayNormalMainContentProvider
+
+- (id)_tweetsSubtitle {
+    id original = %orig;
+    
+    if (![BHTSettings boolForKey:@"show_unrounded_counts"]) {
+        return original;
+    }
+
+    NSNumber* count = self.viewModel.tweetCount;
+    if (![count isKindOfClass:[NSNumber class]] || ![original isKindOfClass:[NSString class]]) {
+        return original;
+    }
+
+    NSString* abbreviated = [count tfs_twitterAbbreviated];
+    NSNumberFormatter* formatter = [[NSNumberFormatter alloc] init];
+    formatter.numberStyle = NSNumberFormatterDecimalStyle;
+    NSString* fullCount = [formatter stringFromNumber:count];
+
+    if (!abbreviated.length || !fullCount.length || [abbreviated isEqualToString:fullCount]) {
+        return original;
+    }
+
+    NSRange range = [(NSString*)original rangeOfString:abbreviated];
+    if (range.location == NSNotFound) {
+        return original;
+    }
+
+    return [(NSString*)original stringByReplacingCharactersInRange:range withString:fullCount];
 }
 
 %end
