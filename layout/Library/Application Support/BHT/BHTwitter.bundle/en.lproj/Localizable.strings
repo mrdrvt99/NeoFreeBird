@@ -86,6 +86,9 @@
 "TWEET_CONFIRM_TITLE" = "Confirm Tweets";
 "TWEET_CONFIRM_DETAIL" = "Ask before you post a Tweet.";
 
+"SHOW_POLL_RESULTS_TITLE" = "Show poll results before voting";
+"SHOW_POLL_RESULTS_DETAIL" = "Appends the poll results to option names before you vote, so you can see how others have voted.";
+
 "HIDE_BLUE_VERIFIED_TITLE" = "Hide Blue verified checkmarks";
 "HIDE_BLUE_VERIFIED_DETAIL" = "Hide paid verified checkmark on Tweets. This does not include brand/government accounts.";
 
@@ -171,6 +174,9 @@
 "RESTORE_VIDEO_TIMESTAMP_TITLE" = "Video timestamp";
 "RESTORE_VIDEO_TIMESTAMP_DETAIL" = "Shows timestamp on immersive player.";
 
+"TAP_TO_PAUSE_TITLE" = "Tap to pause videos";
+"TAP_TO_PAUSE_DETAIL" = "Tap on a video to pause it, instead of having to use the pause button.";
+
 "DISABLE_IMMERSIVE_SCROLL_TITLE" = "No video feed scrolling";
 
 "DISABLE_VIDEO_DOCKING_TITLE" = "No video docking";
@@ -245,7 +251,7 @@
 "CUSTOM_FONTS_MENU_TITLE" = "\nChoose a font";
 "CUSTOM_FONTS_TUT_ALERT_MESSAGE" = "No custom fonts yet. Install some with the iFont app from the App Store.";
 
-/*Dwonload*/
+/*Download*/
 "DOWNLOAD_MENU_TITLE" = "\nChoose video quality";
 "FETCHING_PROGRESS_TITLE" = "Just a second...";
 "DOWNLOAD_AS_GIF_OPTION_TITLE" = "Download as GIF";
@@ -283,6 +289,9 @@
 
 "RESTORE_TWITTER_NAMES_TITLE" = "Restore Twitter terminology";
 "RESTORE_TWITTER_NAMES_DETAIL" = "Replaces 'X' with 'Twitter', 'Post' with 'Tweet', 'Repost' with 'Retweet' and so on throughout the app's interface.";
+
+"BLUE_LAUNCH_SCREEN_TITLE" = "Restore blue launch screen";
+"BLUE_LAUNCH_SCREEN_DETAIL" = "Restores the original blue launch screen.";
 
 /*Dim Theme*/
 "ENABLE_DIM_THEME_TITLE" = "Enable dim theme";

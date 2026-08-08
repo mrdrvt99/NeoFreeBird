@@ -22,6 +22,9 @@ static UIColor* twitterColor(void) {
 %hook T1AnimatedLaunchScreenView
 -(void)layoutSubviews {
     %orig;
+    if (![BHTSettings boolForKey:@"blue_launch_screen"]){
+        return;
+    }
     for (UIView *v in self.subviews) {
         v.backgroundColor = twitterColor();
     }

@@ -166,6 +166,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"key": @"disable_video_docking",
                         @"default": @NO,
                         @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"tap_to_pause",
+                        @"default": @NO,
+                        @"type": @"toggle"
                     }
                 ]
             },
@@ -273,6 +278,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"type": @"toggle"
                     },
                     @{
+                        @"key": @"show_poll_results",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
                         @"key": @"upload_full_hd_videos",
                         @"default": @NO,
                         @"type": @"toggle"
@@ -330,6 +340,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     },
                     @{
                         @"key": @"color_twitter_icon_in_top_bar",
+                        @"default": @([BHTManager isTwitterBranded]),
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"blue_launch_screen",
                         @"default": @([BHTManager isTwitterBranded]),
                         @"type": @"toggle"
                     }

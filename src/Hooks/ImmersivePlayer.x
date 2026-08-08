@@ -182,3 +182,48 @@ static BOOL isImmersiveCardPan(id viewController,
 }
 
 %end
+
+// MARK: - Tap to Play/Pause
+
+static TAVPlayer* immersivePagePlayer(UIView* pageView) {
+    Ivar playerIvar = class_getInstanceVariable([pageView class], "player");
+    return playerIvar ? object_getIvar(pageView, playerIvar) : nil;
+}
+
+// timeControlStatus follows AVPlayer: 0 paused, 1 waiting to play, 2 playing.
+static void togglePlayback(TAVPlayer* player) {
+    if (player.playbackState.timeControlStatus != 0) {
+        [player pause];
+    } else {
+        [player playOrReplay];  // replays instead of no-oping at end of video
+    }
+}
+
+%hook _TtC14T1TwitterSwift17ImmersiveCardView
+
+- (void)handleSingleTap:(UITapGestureRecognizer*)tap {
+    if (![BHTSettings boolForKey:@"tap_to_pause"]) {
+        %orig; 
+        return;
+    }
+
+    __block UIView* pageView = nil;
+    EnumerateSubviewsRecursively(self, ^(UIView* view) {
+        if (!pageView &&
+            [view isKindOfClass:%c(_TtC14T1TwitterSwift22ImmersiveVideoPageView)]) {
+            pageView = view;
+        }
+    });
+
+    TAVPlayer* player = pageView ? immersivePagePlayer(pageView) : nil;
+    if (!player) {
+        %orig;
+        return;
+    }
+
+    BOOL wasPlaying = player.playbackState.timeControlStatus != 0;
+    togglePlayback(player);
+    [self setPausedByUser:wasPlaying];  
+}
+
+%end

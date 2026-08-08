@@ -100,6 +100,7 @@
 @end
 
 @interface TFNButton : UIButton
+@property (nonatomic, assign) NSString* _mapsui_title;
 + (id)buttonWithImage:(id)arg1 style:(long long)arg2 sizeClass:(long long)arg3;
 + (id)buttonWithTitle:(id)arg1
            imageNamed:(id)arg2
@@ -136,6 +137,9 @@
 @end
 
 @interface TFNBarButtonItemButton : UIButton
+@end
+
+@interface TFNTappableHighlightView: UIView
 @end
 
 @interface TFNTitleView : UIView

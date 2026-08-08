@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.3.0",
+      "subtitle": "NeoFreeBird version 6.4.0",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -30,9 +30,18 @@
         {
           "version": "12.9",
           "buildVersion": "10",
+          "date": "2026-08-06T18:11:54Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.4.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.4.0_12.9.ipa",
+          "size": 224028113,
+          "minOSVersion": "14.0",
+          "localizedDescription": "Version 6.4.0\n\nNew Features\n- Added option to download voice messages (due to how XChat encrypts attachments, you need to play the message to have the option to download it)\n- Added ability to upload in 1080p (and 4k, but this is technically unsupported)\n- Added option to see poll results before voting\n- Added option to tap to play/pause video (video controls can’t be hidden with this option on, Twitter limitation)\n\nFixes\n- Fixes the black launch screen and now shows it as blue the whole way through. There is an option to toggle it back to black.\n"
+        },
+        {
+          "version": "12.9",
+          "buildVersion": "10",
           "date": "2026-08-01T20:48:17Z",
-          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.3.0-1/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.3.0_12.9.ipa",
-          "size": 224022916,
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.3.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.3.0_12.9.ipa",
+          "size": 224620413,
           "minOSVersion": "14.0",
           "localizedDescription": "New Features\n- Added option to directly copy user URL\n- Added option to hide the “typing” indicator in Chat\n- Added a toggle to show unrounded counts, as well as added the ability to show the unrounded number of tweets\n- The News tab is now hidden\n- Added an option to disable the gesture to dock videos\n\nFixes\n- Fixed tab labels being off-center\n- Fixed the “Restore Video Timestamp” option\n- Tinted some buttons in the Chat menu \n- Fixed the news button not being rebranded"
         },
