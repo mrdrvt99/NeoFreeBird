@@ -11,6 +11,7 @@
 // The Home tab is the app's landing surface, so it is always kept visible,
 // pinned first, and can never end up in the hidden list.
 NSString* const CustomTabBarHomePageID = @"home";
+NSString* const CustomTabBarMorePageID = @"dash";
 
 NSString* const TabPageKey = @"page";
 NSString* const TabTitleKey = @"title";
@@ -119,6 +120,8 @@ static NSString* const kLegacyHiddenKey = @"bh_tabs_hidden";
     // Home is always visible and always first.
     [pageIDs removeObject:CustomTabBarHomePageID];
     [pageIDs insertObject:CustomTabBarHomePageID atIndex:0];
+    [pageIDs removeObject:CustomTabBarMorePageID];
+    [pageIDs addObject:CustomTabBarMorePageID];
     return pageIDs;
 }
 
@@ -135,7 +138,7 @@ static NSString* const kLegacyHiddenKey = @"bh_tabs_hidden";
 }
 
 + (NSArray<NSString*>*)defaultVisiblePageIDs {
-    return @[@"home", @"guide", @"ntab", @"messages"];
+    return @[@"home", @"guide", @"ntab", @"messages", @"dash"];
 }
 
 @end

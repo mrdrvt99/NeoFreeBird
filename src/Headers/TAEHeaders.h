@@ -23,6 +23,7 @@
 @protocol TAEColorPalette
 - (id)colorPalette;
 - (UIColor*)primaryColorForOption:(NSUInteger)colorOption;
+- (UIColor*)tabBarItemColor;
 @end
 
 @interface TAETwitterColorPaletteSettingInfo : NSObject

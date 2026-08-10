@@ -23,6 +23,7 @@ BOOL BHTDimThemeEnabled(void);
 UIColor* BHTDimBackgroundColor(void);
 UIColor* BHTDimElevatedBackgroundColor(void);
 UIColor* BHTDimHighlightBackgroundColor(void);
+UIColor* BHTDimSearchPillColor(void);
 
 /**
  * Best-effort remap for a color that's already been resolved for a trait

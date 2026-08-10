@@ -12,6 +12,7 @@
 #import <UIKit/UIKit.h>
 #import "ColorSwatchControl.h"
 #import "Core/BHTBundle.h"
+#import "Core/BHTSettings.h"
 #import "Core/TwitterChirpFont.h"
 #import "Headers/TWHeaders.h"
 #import "ThemeColor/Palette.h"
@@ -130,6 +131,22 @@ static UIColor* NativeAccentColor(NSUInteger option) {
     [self reapplyTabBarAccent];
 }
 
+
+static void reapplySegmentedCaretAccent(UIView* view) {
+    static Class caretClass;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        caretClass = NSClassFromString(@"_TtC10TFNUISwift25SegmentedHighlightBarView");
+    });
+
+    if (caretClass && [view isKindOfClass:caretClass]) {
+        view.backgroundColor = CurrentAccentColor();
+    }
+    for (UIView* subview in view.subviews) {
+        reapplySegmentedCaretAccent(subview);
+    }
+}
+
 // Re-tint the live tab bar icons to the new accent.
 - (void)reapplyTabBarAccent {
     Class t1TabBarVCClass = NSClassFromString(@"T1TabBarViewController");
@@ -171,6 +188,10 @@ static UIColor* NativeAccentColor(NSUInteger option) {
         if ([vc isKindOfClass:[UITabBarController class]])
             [stack addObjectsFromArray:((UITabBarController*)vc).viewControllers];
         [stack addObjectsFromArray:vc.childViewControllers];
+    }
+
+    if ([BHTSettings boolForKey:@"tab_bar_theming"]) {
+        reapplySegmentedCaretAccent(window);
     }
 }
 

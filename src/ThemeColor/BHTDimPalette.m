@@ -6,8 +6,9 @@
 //
 
 #import "ThemeColor/BHTDimPalette.h"
-#import "Core/BHTSettings.h"
 #import <objc/runtime.h>
+#import "Core/BHTSettings.h"
+#import "Headers/TAEHeaders.h"
 
 BOOL BHTDimThemeEnabled(void) {
     return [BHTSettings boolForKey:@"enable_dim_theme"];
@@ -15,9 +16,9 @@ BOOL BHTDimThemeEnabled(void) {
 
 static UIColor* BHTColorWithRGB(uint32_t rgb) {
     return [UIColor colorWithRed:((rgb >> 16) & 0xFF) / 255.0
-                            green:((rgb >> 8) & 0xFF) / 255.0
-                             blue:(rgb & 0xFF) / 255.0
-                            alpha:1.0];
+                           green:((rgb >> 8) & 0xFF) / 255.0
+                            blue:(rgb & 0xFF) / 255.0
+                           alpha:1.0];
 }
 
 // Classic Twitter Dim palette: a navy background, a slightly lighter navy for
@@ -33,6 +34,25 @@ UIColor* BHTDimElevatedBackgroundColor(void) {
 }
 UIColor* BHTDimHighlightBackgroundColor(void) {
     return BHTColorWithRGB(0x1C2836);
+}
+
+// The legacy Dim search field used its own neutral shade rather than any of
+// the three general-purpose background colors above.
+UIColor* BHTDimSearchPillColor(void) {
+    return BHTColorWithRGB(0x29333F);
+}
+
+static UIColor* BHTCurrentAccentColor(id<TAEColorPalette> palette) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    NSInteger option = 0; // Twitter's default blue option.
+
+    if ([defaults objectForKey:@"bh_color_theme_selectedColor"]) {
+        option = [defaults integerForKey:@"bh_color_theme_selectedColor"];
+    } else if ([defaults objectForKey:@"T1ColorSettingsPrimaryColorOptionKey"]) {
+        option = [defaults integerForKey:@"T1ColorSettingsPrimaryColorOptionKey"];
+    }
+
+    return [palette primaryColorForOption:option] ?: [UIColor systemBlueColor];
 }
 
 // UIDynamicSystemColor/UIDynamicCatalogColor (the private classes backing
@@ -99,7 +119,6 @@ BOOL BHTColorIsCloseToWhite(UIColor* color) {
     CGFloat minComponent = MIN(red, MIN(green, blue));
     return minComponent > 0.9;
 }
-
 
 @interface BHTDimPaletteProxy ()
 @property (nonatomic, strong) id realPalette;
@@ -230,6 +249,12 @@ BOOL BHTColorIsCloseToWhite(UIColor* color) {
     UIColor* real = [self.realPalette dmBubbleIncomingColor];
     return BHTColorIsCloseToWhite(real) ? real : BHTDimElevatedBackgroundColor();
 }
+// Twitter's current Dark palette makes the selected capsule/tab indicator
+// white. Classic Dim used the account's selected accent color instead.
+- (UIColor*)tabBarItemColor {
+    UIColor* real = [self.realPalette tabBarItemColor];
+    return BHTColorIsCloseToWhite(real) ? BHTCurrentAccentColor(self.realPalette) : real;
+}
 
 - (UIColor*)highlightBackgroundColor {
     UIColor* real = [self.realPalette highlightBackgroundColor];
@@ -253,6 +278,3 @@ BOOL BHTColorIsCloseToWhite(UIColor* color) {
 }
 
 @end
-
-
-

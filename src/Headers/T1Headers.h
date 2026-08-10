@@ -254,7 +254,6 @@
 @end
 
 @interface _TtC14T1TwitterSwift17VideoControlsView : UIView
-- (void)timestampLabelTapped;
 @end
 
 @interface T1ConversationFooterTextView : TFNAttributedTextView

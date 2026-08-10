@@ -90,17 +90,37 @@ static BOOL progressLabelAlphaFromState(id pluginView, CGFloat* outAlpha) {
 
 static const void* kBHTRestoredTimestampKey = &kBHTRestoredTimestampKey;
 
+// VideoControlsView.ProgressLabelMode, a payload-free Swift enum stored in a
+// single byte. The timestamp button's tap handler just flips this and rebuilds
+// its configuration, so writing it has the same effect as tapping the label.
+enum {
+    ProgressLabelModeRemaining = 0,
+    ProgressLabelModeTotal = 1,
+};
+
 %hook _TtC14T1TwitterSwift17VideoControlsView
 
 - (void)layoutSubviews {
     %orig;
 
-    if ([BHTSettings boolForKey:@"restore_video_timestamp"] &&
-        !objc_getAssociatedObject(self, kBHTRestoredTimestampKey)) {
-        objc_setAssociatedObject(self, kBHTRestoredTimestampKey, @YES,
-                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-        [self timestampLabelTapped];
+    if (![BHTSettings boolForKey:@"restore_video_timestamp"] ||
+        objc_getAssociatedObject(self, kBHTRestoredTimestampKey)) {
+        return;
     }
+
+    Ivar modeIvar =
+        class_getInstanceVariable([self class], "progressLabelMode");
+    if (!modeIvar) {
+        return;
+    }
+
+    objc_setAssociatedObject(self, kBHTRestoredTimestampKey, @YES,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+
+    // Set once instead of on every layout so tapping the label still toggles
+    // back to the remaining-time countdown.
+    uint8_t* mode = (uint8_t*)(__bridge void*)self + ivar_getOffset(modeIvar);
+    *mode = ProgressLabelModeTotal;
 }
 
 %end
