@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.4.0",
+      "subtitle": "NeoFreeBird version 6.5.0",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -28,6 +28,15 @@
       ],
       "versions": [
         {
+          "version": "12.15",
+          "buildVersion": "11",
+          "date": "2026-08-16T20:28:36Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.5.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.5.0_12.15.ipa",
+          "size": 227365601,
+          "minOSVersion": "15.0",
+          "localizedDescription": "Updated X to 12.15\n\nNew Features\n- Added option to see where an account is located in a tweet. Can spillover into next line at times\n- Added option to disable screenshot detection in XChat\n\nFixes\n- Fixes the “Restore Video Timestamp” option to prevent crashing on newer versions (fixes #23)\n- Added back the theme color to the horizontal scroll bar (fixes #27)\n- Forced the “more” bar to always be present (this was only an iPad issue)\n- Fixed the video timestamp not reflecting the custom font\n- Moved “Copy Profile Info” to the profile overflow menu. This now means you can’t copy profile info from your own profile, but you can click “Edit profile” and get that, so not a massive loss\n- Fixed bookmarked posts from verified accounts not followed not showing when the option to hide verified tweets was on\n"
+        },
+        {
           "version": "12.9",
           "buildVersion": "10",
           "date": "2026-08-06T18:11:54Z",
@@ -38,7 +47,7 @@
         },
         {
           "version": "12.9",
-          "buildVersion": "10",
+          "buildVersion": "6.3",
           "date": "2026-08-01T20:48:17Z",
           "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.3.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.3.0_12.9.ipa",
           "size": 224620413,

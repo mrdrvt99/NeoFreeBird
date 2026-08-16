@@ -89,6 +89,9 @@
 "SHOW_POLL_RESULTS_TITLE" = "Show poll results before voting";
 "SHOW_POLL_RESULTS_DETAIL" = "Appends the poll results to option names before you vote, so you can see how others have voted.";
 
+"SHOW_ACCOUNT_LOCATION_TITLE" = "Show account location";
+"SHOW_ACCOUNT_LOCATION_DETAIL" = "Show the location of the account that posted a Tweet in the tweet footer.";
+
 "HIDE_BLUE_VERIFIED_TITLE" = "Hide Blue verified checkmarks";
 "HIDE_BLUE_VERIFIED_DETAIL" = "Hide paid verified checkmark on Tweets. This does not include brand/government accounts.";
 
@@ -133,6 +136,9 @@
 
 "DOWNLOAD_VOICE_MESSAGES_TITLE" = "Download voice messages";
 "DOWNLOAD_VOICE_MESSAGES_DETAIL" = "Save voice messages to your device after playing them (long-press on an audio message to download it).";
+
+"BLOCK_SCREENSHOT_DETECTION_TITLE" = "Block screenshot detection";
+"BLOCK_SCREENSHOT_DETECTION_DETAIL" = "Allows you to screenshot \"secure\" chats without being blocked.";
 
 /*Profiles*/
 "FOLLOW_CONFIRM_TITLE" = "Confirm follows";
@@ -311,6 +317,8 @@
 "MODERN_SETTINGS_PLACEHOLDER_DETAIL_TEXT" = "This section is coming soon. Stay tuned for more NeoFreeBird features!";
 
 "SOURCE_UNAVAILABLE" = "Source Unavailable";
+
+"LOCATION_UNAVAILABLE" = "Location Unavailable";
 
 "CONTRIBUTOR_PAGE_SECTION_HEADER_TITLE" = "Contributors";
 

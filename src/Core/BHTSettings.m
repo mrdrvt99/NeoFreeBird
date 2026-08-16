@@ -234,6 +234,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"key": @"download_voice_messages",
                         @"default": @NO,
                         @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"block_screenshot_detection",
+                        @"default": @NO,
+                        @"type": @"toggle"
                     }
                 ]
             },
@@ -280,6 +285,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     @{
                         @"key": @"show_poll_results",
                         @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"show_account_location",
+                        @"default": @YES,
                         @"type": @"toggle"
                     },
                     @{

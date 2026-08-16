@@ -94,13 +94,6 @@
 
 #pragma mark - Profile
 
-@interface T1ProfileActionButtonSpec : NSObject
-- (instancetype)initWithPosition:(NSUInteger)position
-                        priority:(NSUInteger)priority
-                 visibilityBlock:(BOOL (^)(double))visibilityBlock
-             buttonCreationBlock:(UIView* (^)(void))buttonCreationBlock;
-@end
-
 @interface T1ProfileUserViewModel : NSObject
 @property (readonly, copy, nonatomic) NSString* location;
 @property (readonly, copy, nonatomic) NSString* fullName;
@@ -112,6 +105,9 @@
 
 @interface T1ProfileHeaderViewController : UIViewController
 @property (retain, nonatomic) T1ProfileUserViewModel* viewModel;
+// Base TFNActionItems for the profile's "More actions" menu, which the Swift
+// action button layer asks its host for before presenting.
+- (id)profileMoreActionsBaseActionItemsWithSender:(id)sender;
 @end
 
 // Hooked for unrounded tweet/post count
@@ -319,4 +315,12 @@
 
 @interface _TtC14T1TwitterSwift17ImmersiveCardView : UIView
 - (void)setPausedByUser:(BOOL)paused;
+@end
+
+@interface _TtC4DMUI23ContainerViewController: UIViewController
+- (void)loadView;
+@end
+
+@interface _TtC14DMConversation29SecureContainerViewController: _TtC4DMUI23ContainerViewController
+- (void)loadView;
 @end

@@ -243,6 +243,14 @@ static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
         return NO;
     }
 
+    SEL bookmarkedSelector = @selector(displayAsBookmarked);
+    if ([viewModel respondsToSelector:bookmarkedSelector]) {
+        BOOL bookmarked = ((BOOL (*)(id, SEL))objc_msgSend)(viewModel, bookmarkedSelector);
+        if (bookmarked) {
+            return NO;
+        }
+    }
+
     if (inConversation) {
         if (!ItemIsConversationThreadReply(viewModel)) {
             return NO;

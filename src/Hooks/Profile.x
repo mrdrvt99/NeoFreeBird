@@ -7,114 +7,83 @@
 
 // MARK: - Copy profile info
 
-static char kCopyProviderKey;
+static void PresentCopyProfileInfoSheet(T1ProfileUserViewModel* viewModel) {
+    NSMutableArray<TFNActionItem*>* items = [NSMutableArray array];
 
-@interface ProfileCopyButtonProvider : NSObject
-@property (nonatomic, weak) T1ProfileHeaderViewController* headerViewController;
-@property (nonatomic, weak) id delegate;
-@property (nonatomic, strong) TFNButton* infoButton;
-@end
-
-@implementation ProfileCopyButtonProvider
-
-- (NSArray<UIMenuElement*>*)copyActions {
-    T1ProfileUserViewModel* viewModel = self.headerViewController.viewModel;
-
-    UIAction* (^copyAction)(NSString*, NSString*, NSString*) =
+    void (^addCopyItem)(NSString*, NSString*, NSString*) =
         ^(NSString* titleKey, NSString* iconName, NSString* value) {
-            UIAction* action =
-                [UIAction actionWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:titleKey]
-                                    image:[UIImage tfn_vectorImageNamed:iconName
-                                                               fitsSize:CGSizeMake(16.0, 16.0)
-                                                              fillColor:UIColor.labelColor]
-                               identifier:nil
-                                  handler:^(__kindof UIAction* act) {
-                                      if (value.length) {
-                                          UIPasteboard.generalPasteboard.string = value;
-                                      }
-                                  }];
             if (!value.length) {
-                action.attributes = UIMenuElementAttributesDisabled;
+                return;
             }
-            return action;
+            TFNActionItem* item = [%c(TFNActionItem)
+                actionItemWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:titleKey]
+                          imageName:iconName
+                             action:^{
+                                 UIPasteboard.generalPasteboard.string = value;
+                             }];
+            if (item) {
+                [items addObject:item];
+            }
         };
 
-    return @[
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_3", @"account", viewModel.fullName),
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_2", @"at", viewModel.username),
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_1", @"news_stroke", viewModel.bio),
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_5", @"location_stroke", viewModel.location),
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_4", @"link", viewModel.url),
-        copyAction(@"COPY_PROFILE_INFO_MENU_OPTION_6", @"link", [NSString stringWithFormat:@"https://x.com/%@", viewModel.username]),
-    ];
-}
-
-- (TFNButton*)buttonView {
-    if (!self.infoButton) {
-        // Style 2 in size class 2 is the bordered round icon style the other
-        // header buttons use.
-        TFNButton* button = [%c(TFNButton) buttonWithTitle:nil
-                                                    imageNamed:@"copy_stroke"
-                                                         style:2
-                                                     sizeClass:2];
-        button.accessibilityLabel =
-            [[BHTBundle sharedBundle] localizedStringForKey:@"COPY_PROFILE_INFO_TITLE"];
-        button.showsMenuAsPrimaryAction = YES;
-
-        // Deferred so each open rebuilds the actions with the loaded profile
-        // data and the current theme's icon color.
-        __weak ProfileCopyButtonProvider* weakSelf = self;
-        void (^actionsProvider)(void (^)(NSArray<UIMenuElement*>*)) =
-            ^(void (^completion)(NSArray<UIMenuElement*>*)) {
-                completion([weakSelf copyActions] ?: @[]);
-            };
-        UIDeferredMenuElement* deferredActions;
-        if (@available(iOS 15.0, *)) {
-            deferredActions = [UIDeferredMenuElement elementWithUncachedProvider:actionsProvider];
-        } else {
-            deferredActions = [UIDeferredMenuElement elementWithProvider:actionsProvider];
-        }
-        button.menu = [UIMenu menuWithTitle:@"" children:@[deferredActions]];
-
-        self.infoButton = button;
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_3", @"account", viewModel.fullName);
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_2", @"at", viewModel.username);
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_1", @"news_stroke", viewModel.bio);
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_5", @"location_stroke", viewModel.location);
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_4", @"link", viewModel.url);
+    if (viewModel.username.length) {
+        addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_6", @"link",
+                    [NSString stringWithFormat:@"https://x.com/%@", viewModel.username]);
     }
-    return self.infoButton;
-}
 
-- (NSArray*)buttonSpecs {
-    // Native positions run from 2 (follow) to 10 (mute), so 100 lands at the
-    // far end; priority 1 lets every native button win the width fight.
-    __weak ProfileCopyButtonProvider* weakSelf = self;
-    T1ProfileActionButtonSpec* spec = [[%c(T1ProfileActionButtonSpec) alloc] initWithPosition:100
-        priority:1
-        visibilityBlock:^BOOL(double availableWidth) {
-            return YES;
-        }
-        buttonCreationBlock:^UIView* {
-            return [weakSelf buttonView];
-        }];
-    return spec ? @[spec] : @[];
-}
+    if (!items.count) {
+        return;
+    }
 
-@end
+    TFNMenuSheetViewController* sheet = [[%c(TFNMenuSheetViewController) alloc]
+        initWithTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"COPY_PROFILE_INFO_TITLE"]
+          actionItems:items];
+    [sheet tfnPresentedCustomPresentFromViewController:topMostController()
+                                              animated:YES
+                                            completion:nil];
+}
 
 %hook T1ProfileHeaderViewController
 
-- (NSArray*)actionButtonProviders {
-    NSArray* providers = %orig;
+- (id)profileMoreActionsBaseActionItemsWithSender:(id)sender {
+    NSArray* items = %orig;
 
-    if (![BHTSettings boolForKey:@"copy_profile_info"]) {
-        return providers;
+    if (![BHTSettings boolForKey:@"copy_profile_info"] ||
+        ![items isKindOfClass:[NSArray class]]) {
+        return items;
     }
 
-    ProfileCopyButtonProvider* copyProvider = objc_getAssociatedObject(self, &kCopyProviderKey);
-    if (!copyProvider) {
-        copyProvider = [ProfileCopyButtonProvider new];
-        copyProvider.headerViewController = self;
-        objc_setAssociatedObject(self, &kCopyProviderKey, copyProvider,
-                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+    // Only extend a menu built the way this expects: if the action items ever
+    // stop being TFNActionItems, the copy entry drops out rather than handing
+    // the menu something it cannot show.
+    if (![items.firstObject isKindOfClass:%c(TFNActionItem)]) {
+        return items;
     }
-    return [providers arrayByAddingObject:copyProvider];
+
+    T1ProfileUserViewModel* viewModel = self.viewModel;
+    if (![viewModel respondsToSelector:@selector(username)]) {
+        return items;
+    }
+
+    TFNActionItem* copyItem = [%c(TFNActionItem)
+        actionItemWithTitle:[[BHTBundle sharedBundle]
+                                localizedStringForKey:@"COPY_PROFILE_INFO_TITLE"]
+                  imageName:@"copy_stroke"
+                     action:^{
+                         // The more-actions menu is still on its way out when
+                         // the action fires, so let it finish before stacking
+                         // the copy sheet on top.
+                         dispatch_async(dispatch_get_main_queue(), ^{
+                             PresentCopyProfileInfoSheet(viewModel);
+                         });
+                     }];
+
+    return copyItem ? [items arrayByAddingObject:copyItem] : items;
 }
 
 %end

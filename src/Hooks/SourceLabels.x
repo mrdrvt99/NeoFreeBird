@@ -5,26 +5,32 @@
 
 #import "HookHelpers.h"
 
-// MARK: - Restore Tweet Source Labels
+// MARK: - Restore Tweet Source Labels / Account Locations
 //
-// The source is gone from the on-device status models, so it's fetched from
-// x.com's web GraphQL TweetDetail endpoint (reusing the web session that
-// WebCreateTweet.x establishes), cached by tweet ID, and appended to the detail
-// footer item's time string. Original idea by @nyaathea.
+// Neither the source nor the author's "based in" country survive in the on-device
+// status models, so both are fetched from x.com's web GraphQL endpoints (reusing the
+// web session that WebCreateTweet.x establishes), cached, and appended to the detail
+// footer item's time string. Original idea by @nyaathea; the account-location half
+// mirrors what Control Panel for Twitter does on the web.
 
 // Source labels keyed by tweet ID (declared in BHTHookHelpers.h).
 NSMutableDictionary* tweetSources = nil;
 
-// Per-tweet fetch bookkeeping. All of these — including tweetSources — are only
-// mutated on the main thread, so no locking is required.
+// Account locations keyed by screen name.
+static NSMutableDictionary* accountLocations = nil;
+
 static NSMutableDictionary* fetchPending = nil;
 static NSMutableDictionary* fetchRetries = nil;
+static NSMutableDictionary* locationPending = nil;
+static NSMutableDictionary* locationRetries = nil;
 
-static char kSourceAppendedKey;  // marks a footer item whose timeAgo already carries the source
-static char kFooterTweetIDKey;   // the tweet ID a footer text view is currently showing
-static char kFooterObservingKey; // whether a footer text view registered for update notifications
+static char kFooterComposedKey;   // @[base, composed] timeAgo pair last written to a footer item
+static char kFooterTweetIDKey;    // the tweet ID a footer text view is currently showing
+static char kFooterScreenNameKey; // the author handle a footer text view is currently showing
+static char kFooterObservingKey;  // whether a footer text view registered for update notifications
 
 #define SOURCE_NOTE           @"TweetSourceUpdated"
+#define LOCATION_NOTE         @"AccountLocationUpdated"
 #define MAX_SOURCE_CACHE_SIZE 200
 #define MAX_FETCH_RETRIES     3
 
@@ -33,9 +39,8 @@ static NSString* const kSourceBearer = @"Bearer "
                                        @"AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puT"
                                        @"s%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA";
 
-// TweetDetail persisted-query id. Web-client specific and can rotate; a stale value
-// just yields an unavailable label rather than a wrong one.
 static NSString* const kTweetDetailQueryID = @"rZA6K31W4E90vZKBmxXV3g";
+static NSString* const kAboutAccountQueryID = @"XRqGa7EeokUU5kppkh13EA";
 
 // JSON-serialize `object` and percent-encode it for a GraphQL query parameter.
 static NSString* encodedQueryParameter(id object) {
@@ -45,6 +50,71 @@ static NSString* encodedQueryParameter(id object) {
     NSString* json = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     return [json
         stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet alphanumericCharacterSet]];
+}
+
+// Dictionary-typed subscript that tolerates missing, NSNull and mistyped nodes — a
+// GraphQL response nulls out whole branches for suspended or nonexistent accounts.
+static NSDictionary* dictionaryValue(id container, NSString* key) {
+    if (![container isKindOfClass:[NSDictionary class]]) return nil;
+
+    id value = container[key];
+    return [value isKindOfClass:[NSDictionary class]] ? value : nil;
+}
+
+static NSMutableURLRequest* webGraphQLRequest(NSURL* url) {
+    if (!url) return nil;
+
+    NSDictionary* credentials = currentWebCredentials();
+    NSString* authToken = credentials[@"auth_token"];
+    NSString* ct0 = credentials[@"ct0"];
+    if (authToken.length == 0 || ct0.length == 0) return nil;
+
+    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+    request.HTTPMethod = @"GET";
+    request.timeoutInterval = 10.0;
+    request.HTTPShouldHandleCookies = NO;
+    [request setValue:kSourceBearer forHTTPHeaderField:@"authorization"];
+    [request setValue:@"OAuth2Session" forHTTPHeaderField:@"x-twitter-auth-type"];
+    [request setValue:@"yes" forHTTPHeaderField:@"x-twitter-active-user"];
+    [request setValue:@"en" forHTTPHeaderField:@"x-twitter-client-language"];
+    [request setValue:ct0 forHTTPHeaderField:@"x-csrf-token"];
+    [request setValue:[NSString stringWithFormat:@"auth_token=%@; ct0=%@", authToken, ct0]
+        forHTTPHeaderField:@"Cookie"];
+    return request;
+}
+
+// Decodes a 200 response body, or nil if the request failed in any way.
+static NSDictionary* jsonFromResponse(NSData* data, NSURLResponse* response, NSError* error) {
+    NSHTTPURLResponse* http =
+        [response isKindOfClass:[NSHTTPURLResponse class]] ? (NSHTTPURLResponse*)response : nil;
+    if (error || !data || http.statusCode != 200) return nil;
+
+    NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+    return [json isKindOfClass:[NSDictionary class]] ? json : nil;
+}
+
+static void pruneCache(NSMutableDictionary* cache, NSString* unavailable,
+                       NSMutableDictionary* pending, NSMutableDictionary* retries) {
+    if (cache.count <= MAX_SOURCE_CACHE_SIZE) return;
+
+    NSMutableArray* keysToRemove = [NSMutableArray array];
+    for (NSString* key in cache) {
+        NSString* value = cache[key];
+        if (value.length == 0 || [value isEqualToString:unavailable]) {
+            [keysToRemove addObject:key];
+        }
+    }
+
+    for (NSString* key in keysToRemove) {
+        [cache removeObjectForKey:key];
+        [pending removeObjectForKey:key];
+        [retries removeObjectForKey:key];
+    }
+}
+
+static NSString* displayableValue(NSString* cached, NSString* unavailable) {
+    if (cached.length == 0 || [cached isEqualToString:unavailable]) return nil;
+    return cached;
 }
 
 // --- Model / view seams verified against classdump/12.3 (T1Twitter.c) ---
@@ -57,6 +127,8 @@ static NSString* encodedQueryParameter(id object) {
 @property (nonatomic, readonly) T1ConversationFooterItem* footerItem;
 @property (nonatomic, readonly) TFNAttributedTextView* textView;
 - (void)BHT_forceRecolorSource;
+- (void)BHT_startObservingFooterUpdates;
+- (void)BHT_composeFooterSuffixWithSource:(NSString*)source location:(NSString*)location;
 @end
 
 @interface TFNAttributedTextView (SourceLabels)
@@ -67,12 +139,22 @@ static NSString* encodedQueryParameter(id object) {
 // internals this rewrite adds.
 @interface TweetSourceHelper (SourceLabels)
 + (NSString*)unavailableString;
-+ (void)pruneCacheIfNeeded;
 + (NSString*)labelFromSourceHTML:(NSString*)html;
 + (NSURL*)tweetDetailURLForTweetID:(NSString*)tweetID;
 + (NSString*)sourceHTMLFromTweetDetail:(NSDictionary*)json forTweetID:(NSString*)tweetID;
 + (void)markTweetID:(NSString*)tweetID unavailable:(BOOL)unavailable withSource:(NSString*)source;
 + (void)retryOrFailTweetID:(NSString*)tweetID;
+@end
+
+@interface AccountLocationHelper : NSObject
++ (NSString*)unavailableString;
++ (void)fetchLocationForScreenName:(NSString*)screenName;
++ (NSURL*)aboutAccountURLForScreenName:(NSString*)screenName;
++ (NSString*)labelFromAboutAccount:(NSDictionary*)json;
++ (void)markScreenName:(NSString*)screenName
+           unavailable:(BOOL)unavailable
+          withLocation:(NSString*)location;
++ (void)retryOrFailScreenName:(NSString*)screenName;
 @end
 
 @implementation TweetSourceHelper
@@ -109,7 +191,8 @@ static NSString* encodedQueryParameter(id object) {
 // Pulls the focal tweet's raw source markup out of a TweetDetail response. The
 // conversation also carries replies, so we match the entry by rest_id.
 + (NSString*)sourceHTMLFromTweetDetail:(NSDictionary*)json forTweetID:(NSString*)tweetID {
-    NSDictionary* conversation = json[@"data"][@"threaded_conversation_with_injections_v2"];
+    NSDictionary* conversation =
+        dictionaryValue(dictionaryValue(json, @"data"), @"threaded_conversation_with_injections_v2");
     NSArray* instructions = conversation[@"instructions"];
     if (![instructions isKindOfClass:[NSArray class]]) return nil;
 
@@ -118,12 +201,14 @@ static NSString* encodedQueryParameter(id object) {
         if (![entries isKindOfClass:[NSArray class]]) continue;
 
         for (NSDictionary* entry in entries) {
-            NSDictionary* result = entry[@"content"][@"itemContent"][@"tweet_results"][@"result"];
-            if (![result isKindOfClass:[NSDictionary class]]) continue;
+            NSDictionary* itemContent =
+                dictionaryValue(dictionaryValue(entry, @"content"), @"itemContent");
+            NSDictionary* result =
+                dictionaryValue(dictionaryValue(itemContent, @"tweet_results"), @"result");
+            if (!result) continue;
 
             // TweetWithVisibilityResults nests the real tweet one level down.
-            NSDictionary* tweet =
-                [result[@"tweet"] isKindOfClass:[NSDictionary class]] ? result[@"tweet"] : result;
+            NSDictionary* tweet = dictionaryValue(result, @"tweet") ?: result;
             if (![tweet[@"rest_id"] isEqualToString:tweetID]) continue;
 
             NSString* source = tweet[@"source"];
@@ -132,27 +217,6 @@ static NSString* encodedQueryParameter(id object) {
     }
 
     return nil;
-}
-
-// Keeps the cache from growing without bound by dropping resolved/unavailable entries.
-+ (void)pruneCacheIfNeeded {
-    if (tweetSources.count <= MAX_SOURCE_CACHE_SIZE) return;
-
-    NSString* unavailable = [self unavailableString];
-    NSMutableArray* keysToRemove = [NSMutableArray array];
-
-    for (NSString* key in tweetSources) {
-        NSString* value = tweetSources[key];
-        if (value.length == 0 || [value isEqualToString:unavailable]) {
-            [keysToRemove addObject:key];
-        }
-    }
-
-    for (NSString* key in keysToRemove) {
-        [tweetSources removeObjectForKey:key];
-        [fetchPending removeObjectForKey:key];
-        [fetchRetries removeObjectForKey:key];
-    }
 }
 
 // Extracts the visible label from the "<a ...>Twitter for iPhone</a>" source markup.
@@ -211,60 +275,27 @@ static NSString* encodedQueryParameter(id object) {
 + (void)fetchSourceForTweetID:(NSString*)tweetID {
     if (tweetID.length == 0) return;
 
-    [self pruneCacheIfNeeded];
+    NSString* unavailable = [self unavailableString];
+    pruneCache(tweetSources, unavailable, fetchPending, fetchRetries);
 
     if ([fetchPending[tweetID] boolValue]) return;
 
     NSString* existing = tweetSources[tweetID];
-    if (existing.length > 0 && ![existing isEqualToString:[self unavailableString]]) return;
+    if (existing.length > 0 && ![existing isEqualToString:unavailable]) return;
 
-    NSDictionary* credentials = currentWebCredentials();
-    NSString* authToken = credentials[@"auth_token"];
-    NSString* ct0 = credentials[@"ct0"];
-    if (authToken.length == 0 || ct0.length == 0) {
-        // The web session may not be harvested yet on a cold start; retry rather than
-        // giving up, so it recovers once the prewarmed session lands.
+    NSMutableURLRequest* request = webGraphQLRequest([self tweetDetailURLForTweetID:tweetID]);
+    if (!request) {
         [self retryOrFailTweetID:tweetID];
-        return;
-    }
-
-    NSURL* url = [self tweetDetailURLForTweetID:tweetID];
-    if (!url) {
-        [self markTweetID:tweetID unavailable:YES withSource:nil];
         return;
     }
 
     fetchPending[tweetID] = @(YES);
 
-    NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
-    request.HTTPMethod = @"GET";
-    request.timeoutInterval = 10.0;
-    request.HTTPShouldHandleCookies = NO;
-    [request setValue:kSourceBearer forHTTPHeaderField:@"authorization"];
-    [request setValue:@"OAuth2Session" forHTTPHeaderField:@"x-twitter-auth-type"];
-    [request setValue:@"yes" forHTTPHeaderField:@"x-twitter-active-user"];
-    [request setValue:@"en" forHTTPHeaderField:@"x-twitter-client-language"];
-    [request setValue:ct0 forHTTPHeaderField:@"x-csrf-token"];
-    [request setValue:[NSString stringWithFormat:@"auth_token=%@; ct0=%@", authToken, ct0]
-        forHTTPHeaderField:@"Cookie"];
-
     NSURLSessionDataTask* task = [[NSURLSession sharedSession]
         dataTaskWithRequest:request
           completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
-              NSHTTPURLResponse* http = [response isKindOfClass:[NSHTTPURLResponse class]]
-                                            ? (NSHTTPURLResponse*)response
-                                            : nil;
-
-              if (error || !data || http.statusCode != 200) {
-                  [self retryOrFailTweetID:tweetID];
-                  return;
-              }
-
-              NSError* jsonError = nil;
-              NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data
-                                                                   options:0
-                                                                     error:&jsonError];
-              if (jsonError || ![json isKindOfClass:[NSDictionary class]]) {
+              NSDictionary* json = jsonFromResponse(data, response, error);
+              if (!json) {
                   [self retryOrFailTweetID:tweetID];
                   return;
               }
@@ -287,15 +318,178 @@ static NSString* encodedQueryParameter(id object) {
 
 @end
 
+@implementation AccountLocationHelper
+
++ (NSString*)unavailableString {
+    return [[BHTBundle sharedBundle] localizedStringForKey:@"LOCATION_UNAVAILABLE"];
+}
+
++ (NSURL*)aboutAccountURLForScreenName:(NSString*)screenName {
+    NSString* encodedVariables = encodedQueryParameter(@{@"screenName": screenName});
+    if (encodedVariables.length == 0) {
+        return nil;
+    }
+
+    NSString* urlString =
+        [NSString stringWithFormat:@"https://x.com/i/api/graphql/%@/AboutAccountQuery?variables=%@",
+                                   kAboutAccountQueryID, encodedVariables];
+    return [NSURL URLWithString:urlString];
+}
+
++ (NSString*)labelFromAboutAccount:(NSDictionary*)json {
+    NSDictionary* result =
+        dictionaryValue(dictionaryValue(dictionaryValue(json, @"data"),
+                                        @"user_result_by_screen_name"),
+                        @"result");
+    NSDictionary* about = dictionaryValue(result, @"about_profile");
+
+    NSString* basedIn = about[@"account_based_in"];
+    if (![basedIn isKindOfClass:[NSString class]] || basedIn.length == 0) return nil;
+
+    if (![about[@"location_accurate"] boolValue]) {
+        return [basedIn stringByAppendingString:@"?"];
+    }
+    return basedIn;
+}
+
++ (void)markScreenName:(NSString*)screenName
+           unavailable:(BOOL)unavailable
+          withLocation:(NSString*)location {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [locationPending removeObjectForKey:screenName];
+
+        if (unavailable) {
+            accountLocations[screenName] = [self unavailableString];
+        } else {
+            accountLocations[screenName] = location;
+            [locationRetries removeObjectForKey:screenName];
+        }
+
+        [[NSNotificationCenter defaultCenter] postNotificationName:LOCATION_NOTE
+                                                            object:nil
+                                                          userInfo:@{@"screenName": screenName}];
+    });
+}
+
++ (void)retryOrFailScreenName:(NSString*)screenName {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [locationPending removeObjectForKey:screenName];
+
+        NSInteger retries = [locationRetries[screenName] integerValue];
+        if (retries >= MAX_FETCH_RETRIES) {
+            [self markScreenName:screenName unavailable:YES withLocation:nil];
+            return;
+        }
+
+        locationRetries[screenName] = @(retries + 1);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.5 * NSEC_PER_SEC)),
+                       dispatch_get_main_queue(), ^{
+                           [self fetchLocationForScreenName:screenName];
+                       });
+    });
+}
+
+// Must be called on the main thread.
++ (void)fetchLocationForScreenName:(NSString*)screenName {
+    if (screenName.length == 0) return;
+
+    NSString* unavailable = [self unavailableString];
+    pruneCache(accountLocations, unavailable, locationPending, locationRetries);
+
+    if ([locationPending[screenName] boolValue]) return;
+
+    NSString* existing = accountLocations[screenName];
+    if (existing.length > 0 && ![existing isEqualToString:unavailable]) return;
+
+    NSMutableURLRequest* request = webGraphQLRequest([self aboutAccountURLForScreenName:screenName]);
+    if (!request) {
+        [self retryOrFailScreenName:screenName];
+        return;
+    }
+
+    locationPending[screenName] = @(YES);
+
+    NSURLSessionDataTask* task = [[NSURLSession sharedSession]
+        dataTaskWithRequest:request
+          completionHandler:^(NSData* data, NSURLResponse* response, NSError* error) {
+              NSDictionary* json = jsonFromResponse(data, response, error);
+              if (!json) {
+                  [self retryOrFailScreenName:screenName];
+                  return;
+              }
+
+              NSString* location = [self labelFromAboutAccount:json];
+              if (location.length == 0) {
+                  [self markScreenName:screenName unavailable:YES withLocation:nil];
+                  return;
+              }
+
+              [self markScreenName:screenName unavailable:NO withLocation:location];
+          }];
+    [task resume];
+}
+
+@end
+
+// Remove any special characters (mainly the @ prefix, which was causing all requests to silently fail)
+static NSString* normalizedScreenName(id value) {
+    if (![value isKindOfClass:[NSString class]]) return nil;
+
+    static NSCharacterSet* nonHandleCharacters = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        nonHandleCharacters = [[NSCharacterSet
+            characterSetWithCharactersInString:@"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxy"
+                                               @"z0123456789_"] invertedSet];
+    });
+
+    NSString* name = [value stringByTrimmingCharactersInSet:nonHandleCharacters];
+    return name.length > 0 ? name : nil;
+}
+
+// The status model exposes the author handle either directly or via an author object,
+// depending on how the timeline built it, so probe both.
+static NSString* screenNameFromStatus(id status) {
+    if (!status) return nil;
+
+    if ([status respondsToSelector:@selector(fromUserName)]) {
+        NSString* name = normalizedScreenName([status performSelector:@selector(fromUserName)]);
+        if (name) return name;
+    }
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
+    for (NSString* authorKey in @[@"author", @"fromUser", @"user"]) {
+        SEL authorSelector = NSSelectorFromString(authorKey);
+        if (![status respondsToSelector:authorSelector]) continue;
+
+        id author = [status performSelector:authorSelector];
+        for (NSString* nameKey in @[@"screenName", @"username"]) {
+            SEL nameSelector = NSSelectorFromString(nameKey);
+            if (![author respondsToSelector:nameSelector]) continue;
+
+            NSString* name = normalizedScreenName([author performSelector:nameSelector]);
+            if (name) return name;
+        }
+    }
+#pragma clang diagnostic pop
+
+    return nil;
+}
+
 // MARK: - Footer injection
 //
 // -updateFooterTextView rebuilds the footer text from footerItem.timeAgo, so the
-// source is appended there before %orig; when it arrives async we just re-run it.
+// source and location are appended there before %orig; when either arrives async we
+// just re-run it.
 
 %hook T1ConversationFooterTextView
 
 - (void)updateFooterTextView {
-    if (![BHTSettings boolForKey:@"restore_tweet_labels"]) {
+    BOOL wantsSource = [BHTSettings boolForKey:@"restore_tweet_labels"];
+    BOOL wantsLocation = [BHTSettings boolForKey:@"show_account_location"];
+
+    if (!wantsSource && !wantsLocation) {
         %orig;
         return;
     }
@@ -312,49 +506,84 @@ static NSString* encodedQueryParameter(id object) {
             if (statusID > 0) tweetID = [NSString stringWithFormat:@"%lld", statusID];
         }
 
-        if (tweetID.length > 0) {
-            objc_setAssociatedObject(self, &kFooterTweetIDKey, tweetID,
-                                     OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        NSString* screenName = wantsLocation ? screenNameFromStatus(status) : nil;
 
-            if (![objc_getAssociatedObject(self, &kFooterObservingKey) boolValue]) {
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(tweetSourceUpdated:)
-                                                             name:SOURCE_NOTE
-                                                           object:nil];
-                objc_setAssociatedObject(self, &kFooterObservingKey, @(YES),
-                                         OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-            }
+        objc_setAssociatedObject(self, &kFooterTweetIDKey, tweetID,
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+        objc_setAssociatedObject(self, &kFooterScreenNameKey, screenName,
+                                 OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 
-            NSString* source = tweetSources[tweetID];
+        if (tweetID.length > 0 || screenName.length > 0) {
+            [self BHT_startObservingFooterUpdates];
+        }
 
-            if (source == nil) {
+        NSString* source = nil;
+        if (wantsSource && tweetID.length > 0) {
+            NSString* cached = tweetSources[tweetID];
+            if (cached == nil) {
                 tweetSources[tweetID] = @""; // placeholder so we only fetch once
                 [TweetSourceHelper fetchSourceForTweetID:tweetID];
-            } else if (source.length > 0 &&
-                       ![source isEqualToString:[TweetSourceHelper unavailableString]]) {
-                T1ConversationFooterItem* footerItem = self.footerItem;
-                NSString* timeAgo = footerItem.timeAgo;
-
-                if (footerItem && timeAgo.length > 0 &&
-                    ![objc_getAssociatedObject(footerItem, &kSourceAppendedKey) boolValue] &&
-                    ![timeAgo containsString:source]) {
-                    footerItem.timeAgo = [NSString stringWithFormat:@"%@ · %@", timeAgo, source];
-                    objc_setAssociatedObject(footerItem, &kSourceAppendedKey, @(YES),
-                                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-                }
             }
+            source = displayableValue(cached, [TweetSourceHelper unavailableString]);
         }
+
+        NSString* location = nil;
+        if (wantsLocation && screenName.length > 0) {
+            NSString* cached = accountLocations[screenName];
+            if (cached == nil) {
+                accountLocations[screenName] = @"";
+                [AccountLocationHelper fetchLocationForScreenName:screenName];
+            }
+            location = displayableValue(cached, [AccountLocationHelper unavailableString]);
+        }
+
+        [self BHT_composeFooterSuffixWithSource:source location:location];
     } @catch (__unused NSException* e) {
     }
 
     %orig;
 
-    if ([BHTSettings boolForKey:@"restore_tweet_labels"]) {
+    if (wantsSource) {
         __weak __typeof(self) weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{
             [weakSelf BHT_forceRecolorSource];
         });
     }
+}
+
+// Rewrites timeAgo as "<time> · <source> · <location>", keeping the order stable no
+// matter which of the two fetches resolves first.
+%new
+- (void)BHT_composeFooterSuffixWithSource:(NSString*)source location:(NSString*)location {
+    T1ConversationFooterItem* footerItem = self.footerItem;
+    NSString* current = footerItem.timeAgo;
+    if (!footerItem || current.length == 0) return;
+
+    NSArray* previous = objc_getAssociatedObject(footerItem, &kFooterComposedKey);
+    NSString* base = [previous.lastObject isEqualToString:current] ? previous.firstObject : current;
+
+    NSMutableString* composed = [base mutableCopy];
+    if (source.length > 0) [composed appendFormat:@" · %@", source];
+    if (location.length > 0) [composed appendFormat:@" · %@", location];
+
+    if (![composed isEqualToString:current]) {
+        footerItem.timeAgo = composed;
+    }
+    objc_setAssociatedObject(footerItem, &kFooterComposedKey, @[base, [composed copy]],
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+%new
+- (void)BHT_startObservingFooterUpdates {
+    if ([objc_getAssociatedObject(self, &kFooterObservingKey) boolValue]) return;
+
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(tweetSourceUpdated:) name:SOURCE_NOTE object:nil];
+    [center addObserver:self
+               selector:@selector(accountLocationUpdated:)
+                   name:LOCATION_NOTE
+                 object:nil];
+    objc_setAssociatedObject(self, &kFooterObservingKey, @(YES), OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 %new
@@ -379,8 +608,8 @@ static NSString* encodedQueryParameter(id object) {
 
         NSMutableAttributedString* recolored = [current mutableCopy];
         [recolored addAttribute:NSForegroundColorAttributeName
-                           value:CurrentAccentColor()
-                           range:range];
+                          value:CurrentAccentColor()
+                          range:range];
         TFNAttributedTextModel* newModel =
             [[%c(TFNAttributedTextModel) alloc] initWithAttributedString:recolored];
         [textView setTextModel:newModel];
@@ -400,9 +629,22 @@ static NSString* encodedQueryParameter(id object) {
     }
 }
 
+%new
+- (void)accountLocationUpdated:(NSNotification*)notification {
+    NSString* screenName = notification.userInfo[@"screenName"];
+    NSString* mine = objc_getAssociatedObject(self, &kFooterScreenNameKey);
+    if (screenName.length > 0 && [screenName isEqualToString:mine]) {
+        [self updateFooterTextView];
+        [self setNeedsDisplay];
+        [self setNeedsLayout];
+    }
+}
+
 - (void)dealloc {
     if ([objc_getAssociatedObject(self, &kFooterObservingKey) boolValue]) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:SOURCE_NOTE object:nil];
+        NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+        [center removeObserver:self name:SOURCE_NOTE object:nil];
+        [center removeObserver:self name:LOCATION_NOTE object:nil];
     }
     %orig;
 }
@@ -413,6 +655,9 @@ static NSString* encodedQueryParameter(id object) {
     if (!tweetSources) tweetSources = [NSMutableDictionary dictionary];
     if (!fetchPending) fetchPending = [NSMutableDictionary dictionary];
     if (!fetchRetries) fetchRetries = [NSMutableDictionary dictionary];
+    if (!accountLocations) accountLocations = [NSMutableDictionary dictionary];
+    if (!locationPending) locationPending = [NSMutableDictionary dictionary];
+    if (!locationRetries) locationRetries = [NSMutableDictionary dictionary];
 
     %init;
 }

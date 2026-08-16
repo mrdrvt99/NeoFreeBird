@@ -503,9 +503,9 @@ void maybeHandleHarvestWebView(__unsafe_unretained id webViewController) {
 // MARK: - Prewarm
 
 void prewarmWebCookiesIfNeeded(void) {
-    // A web session is needed both for the CreateTweet rewrite and for restoring
-    // tweet source labels, so prewarm whenever either feature is on.
-    if (!nativeCreateTweetInterceptEnabled() && ![BHTSettings boolForKey:@"restore_tweet_labels"]) {
+    if (!nativeCreateTweetInterceptEnabled() &&
+        ![BHTSettings boolForKey:@"restore_tweet_labels"] &&
+        ![BHTSettings boolForKey:@"show_account_location"]) {
         return;
     }
 

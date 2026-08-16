@@ -4,12 +4,27 @@
   # NeoFreeBird-BHTwitter
   <i>The ultimate way to tweak your Twitter/X experience.</i>
 
+  ## Twitter Branding
+
   <div>
     <a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource.json"><img src="images/badges/add_to_altstore.png" alt="Add to AltStore" height="40"></a>
     &nbsp;
     <a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource.json"><img src="images/badges/add_to_sidestore.png" alt="Add to SideStore" height="40"></a>
     &nbsp;
     <a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource.json"><img src="images/badges/add_to_feather.png" alt="Add to Feather" height="40"></a>
+    &nbsp;
+    <a href="https://github.com/orionblur/NeoFreeBird/releases"><img src="images/badges/download_from_github.png" alt="Download from GitHub" height="40"></a>
+    &nbsp;
+  </div>
+
+  ## X Branding
+
+  <div>
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=altstore://source?url=https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource-X.json"><img src="images/badges/add_to_altstore.png" alt="Add to AltStore" height="40"></a>
+    &nbsp;
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=sidestore://source?url=https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource-X.json"><img src="images/badges/add_to_sidestore.png" alt="Add to SideStore" height="40"></a>
+    &nbsp;
+    <a href="https://intradeus.github.io/http-protocol-redirector?r=feather://source/https://raw.githubusercontent.com/orionblur/NeoFreeBird/refs/heads/v6/AltSource-X.json"><img src="images/badges/add_to_feather.png" alt="Add to Feather" height="40"></a>
     &nbsp;
     <a href="https://github.com/orionblur/NeoFreeBird/releases"><img src="images/badges/download_from_github.png" alt="Download from GitHub" height="40"></a>
     &nbsp;

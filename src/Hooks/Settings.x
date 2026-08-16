@@ -4,6 +4,7 @@
 //
 
 #import "HookHelpers.h"
+#import "Headers/XHeaders.h"
 
 // MARK: - NeoFreeBird settings entry
 
@@ -247,23 +248,79 @@ static NSArray* sectionsWithNeoFreeBirdEntry(TFNItemsDataViewController* setting
 }
 %end
 
+// The picked font name for a weight, or nil when the user runs Twitter's own.
+static NSString* CustomFontName(BOOL isBold) {
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    if (![defaults boolForKey:@"custom_fonts"]) {
+        return nil;
+    }
+
+    return [defaults objectForKey:isBold ? @"bhtwitter_font_2"
+                                         : @"bhtwitter_font_1"];
+}
+
 %hook UIFont
 + (UIFont*)tfn_fontWithName:(NSString*)name size:(CGFloat)size {
     UIFont* origFont = %orig;
 
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"custom_fonts"]) {
-        return origFont;
-    }
-
     BOOL isBold = [name containsString:@"Bold"] || [name containsString:@"Heavy"];
-    NSString* customName = [[NSUserDefaults standardUserDefaults]
-        objectForKey:isBold ? @"bhtwitter_font_2" : @"bhtwitter_font_1"];
+    NSString* customName = CustomFontName(isBold);
     if (!customName) {
         return origFont;
     }
 
     return [UIFont fontWithName:customName size:size] ?: origFont;
 }
+%end
+
+%hook XFontCatalog
+
++ (UIFont*)tabularDigitsFontOfSize:(CGFloat)size weight:(UIFontWeight)weight {
+    UIFont* origFont = %orig;
+
+    NSString* customName = CustomFontName(weight >= UIFontWeightSemibold);
+    if (!customName) {
+        return origFont;
+    }
+
+    UIFont* customFont = [UIFont fontWithName:customName size:size];
+    if (!customFont) {
+        return origFont;
+    }
+
+    // Keep the digits equal width so the timestamp doesn't shuffle its layout
+    // on every tick; fonts without tabular figures just ignore the feature.
+    return [customFont tfn_withMonospacedDigits] ?: customFont;
+}
+
+%end
+
+%hook XDSButtonContentElement
++ (id)labelWithText:(id)text font:(id)font color:(id)color {
+
+    id orig = %orig;
+    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"custom_fonts"]) {
+        return orig;
+    }
+
+    BOOL isBold = [font containsString:@"Bold"] ||
+                  [font containsString:@"Heavy"];
+
+    NSString *customName = [[NSUserDefaults standardUserDefaults]
+        objectForKey:isBold ? @"bhtwitter_font_2" : @"bhtwitter_font_1"];
+    if (!customName) {
+        return orig;
+    }
+    UIFont *customFont = [UIFont fontWithName:customName
+                                         size:[(UIFont *)orig pointSize]];
+    if (!customFont) {
+        return orig;
+    }
+
+    return %orig(text, customFont, color);
+
+}
+
 %end
 
 // Cephei blocks HBPreferences access from app processes unless this opt-in
