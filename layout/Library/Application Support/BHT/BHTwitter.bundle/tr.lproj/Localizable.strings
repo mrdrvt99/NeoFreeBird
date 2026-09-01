@@ -10,6 +10,9 @@
 
 "CONFIRM_ALERT_MESSAGE" = "Bunu yapmak istediğine emin misin?";
 
+"YES_ACTION_LABEL" = "Evet";
+"NO_ACTION_LABEL" = "Hayır";
+
 /*Settings*/
 "MODERN_SETTINGS_LAYOUT_TITLE" = "Genel";
 "MODERN_SETTINGS_LAYOUT_SUBTITLE" = "Uygulamayı kilitleyin, gezinme çubuğunu görünür tutun ve daha fazlası.";
@@ -31,6 +34,9 @@
 
 "MODERN_SETTINGS_TWEETS_TITLE" = "Tweetler ve yanıtlar";
 "MODERN_SETTINGS_TWEETS_SUBTITLE" = "Tweetlerin nasıl çalıştığını değiştirin, kullanmadığınız özellikleri kaldırın.";
+
+"MODERN_SETTINGS_CHAT_TITLE" = "Sohbet";
+"MODERN_SETTINGS_CHAT_SUBTITLE" = "XChat arayüzüne yeni özellikler ekleyin.";
 
 "MODERN_SETTINGS_SEARCH_TITLE" = "Arama ve keşfet";
 "MODERN_SETTINGS_SEARCH_SUBTITLE" = "Arama sekmesinde ne gördüğünüzü değiştirin.";
@@ -83,11 +89,20 @@
 "TWEET_CONFIRM_TITLE" = "Tweet atarken sor";
 "TWEET_CONFIRM_DETAIL" = "Tweet atmadan önce onay sor.";
 
+"SHOW_POLL_RESULTS_TITLE" = "Oy vermeden önce anket sonuçlarını göster";
+"SHOW_POLL_RESULTS_DETAIL" = "Diğer kişilerin nasıl oy kullandığını görebilmeniz için oy vermeden önce anket sonuçlarını seçenek isimlerine ekler.";
+
+"SHOW_ACCOUNT_LOCATION_TITLE" = "Hesap konumunu göster";
+"SHOW_ACCOUNT_LOCATION_DETAIL" = "Tweet'i paylaşan hesabın konumunu tweet alt bilgisinde gösterir.";
+
 "HIDE_BLUE_VERIFIED_TITLE" = "Blue onay rozetlerini gizle";
 "HIDE_BLUE_VERIFIED_DETAIL" = "Tweet'lerdeki ücretli onay rozetini gizle. Bu, marka veya devlet hesaplarını kapsamaz.";
 
 "HIDE_VIEW_COUNT_TITLE" = "Görüntüleme sayısını gizle";
 "HIDE_VIEW_COUNT_DETAIL" = "Tweet altındaki görüntüleme sayılarını gösterme.";
+
+"DISABLE_MEDIA_CAROUSEL_TITLE" = "Medya atlıkarıncasını devre dışı bırak";
+"DISABLE_MEDIA_CAROUSEL_DETAIL" = "Birden fazla medya eki için yeni görünümü eski haline döndürür.";
 
 "HIDE_BOOKMARK_BUTTON_TITLE" = "Yer imlerini gizle";
 "HIDE_BOOKMARK_BUTTON_DETAIL" = "Tweet’lerden yer imi butonunu kaldır.";
@@ -119,7 +134,17 @@
 "RESTORE_REPLY_CONTEXT_DETAIL" = "Tweetlerin altında yanıt verilen kişileri gösterir.";
 
 "RESTORE_TWEET_LABELS_TITLE" = "Tweet kaynağını göster";
-"RESTORE_TWEET_LABELS_DETAIL" = "Tweet’in hangi uygulamayla atıldığını gösterir (@nyaathea tarafından).";
+"RESTORE_TWEET_LABELS_DETAIL" = "Tweet’in hangi uygulamayla atıldığını gösterir.";
+
+/*Chat*/
+"HIDE_TYPING_INDICATOR_TITLE" = "Yazıyor göstergesini gizle";
+"HIDE_TYPING_INDICATOR_DETAIL" = "Sohbetlerde diğer kişilere \"yazıyor...\" bildiriminin gitmesini engeller.";
+
+"DOWNLOAD_VOICE_MESSAGES_TITLE" = "Sesli mesajları indir";
+"DOWNLOAD_VOICE_MESSAGES_DETAIL" = "Sesli mesajları dinledikten sonra cihazınıza kaydeder (indirmek için sesli mesaja uzun basın).";
+
+"BLOCK_SCREENSHOT_DETECTION_TITLE" = "Ekran görüntüsü algılamayı engelle";
+"BLOCK_SCREENSHOT_DETECTION_DETAIL" = "\"Güvenli\" sohbetlerde engellenmeden ekran görüntüsü almanızı sağlar.";
 
 /*Profiles*/
 "FOLLOW_CONFIRM_TITLE" = "Takip onayı";
@@ -140,6 +165,9 @@
 "RESTORE_FOLLOW_BUTTON_TITLE" = "Abone ol düğmesi yok";
 "RESTORE_FOLLOW_BUTTON_DETAIL" = "Tweetlerde ve profillerde Abone ol düğmesini gizler.";
 
+"SHOW_UNROUNDED_COUNTS_TITLE" = "Tam sayıları göster";
+"SHOW_UNROUNDED_COUNTS_DETAIL" = "Takipçi, takip ve tweet sayılarını yuvarlamak yerine tam sayı olarak gösterir.";
+
 /*Search*/
 "NO_HISTORY_TITLE" = "Arama geçmişi yok";
 "NO_HISTORY_DETAIL" = "Twitter artık aramalarını kaydetmeyecek.";
@@ -158,7 +186,13 @@
 "RESTORE_VIDEO_TIMESTAMP_TITLE" = "Video zaman etiketi";
 "RESTORE_VIDEO_TIMESTAMP_DETAIL" = "Tam ekran oynatıcıda zaman bilgisini gösterir.";
 
+"TAP_TO_PAUSE_TITLE" = "Videoları durdurmak için dokun";
+"TAP_TO_PAUSE_DETAIL" = "Durdurma butonunu kullanmak yerine videoya 2 parmakla dokunarak durdurmanızı sağlar.";
+
 "DISABLE_IMMERSIVE_SCROLL_TITLE" = "Video akışında kaydırma yok";
+
+"DISABLE_VIDEO_DOCKING_TITLE" = "Video penceresini sabitlemeyi kapat";
+"DISABLE_VIDEO_DOCKING_DETAIL" = "Videoları kaydırırken Resim içinde Resim (PiP) butonunun çıkmasını engeller.";
 
 /*Twitter Blue*/
 "HIDE_PROMOTED_TITLE" = "Reklam yok";
@@ -168,6 +202,9 @@
 
 "DOWNLOAD_VIDEOS_TITLE" = "Medya indir";
 "DOWNLOAD_VIDEOS_DETAIL" = "Tweet’ten video veya GIF indir.";
+
+"UPLOAD_FULL_HD_VIDEOS_TITLE" = "Full HD video yükle";
+"UPLOAD_FULL_HD_VIDEOS_DETAIL" = "1080p çözünürlükte video yükleme özelliğini açar.";
 
 "DIRECT_SAVE_TITLE" = "Fotoğraflara kaydet";
 "DIRECT_SAVE_DETAIL" = "Kaydedilen videolar Fotoğraflar uygulamasına gider.";
@@ -226,7 +263,7 @@
 "CUSTOM_FONTS_MENU_TITLE" = "\nYazı tipi seç";
 "CUSTOM_FONTS_TUT_ALERT_MESSAGE" = "Henüz özel yazı tipi yok. App Store’dan iFont indir.";
 
-/*Dwonload*/
+/*Download*/
 "DOWNLOAD_MENU_TITLE" = "\nVideo kalitesi seç";
 "FETCHING_PROGRESS_TITLE" = "Bir saniye...";
 "DOWNLOAD_AS_GIF_OPTION_TITLE" = "GIF olarak indir";
@@ -237,9 +274,10 @@
 /*Copy profile info*/
 "COPY_PROFILE_INFO_MENU_OPTION_1" = "Biyografiyi kopyala";
 "COPY_PROFILE_INFO_MENU_OPTION_2" = "Kullanıcı adını kopyala";
-"COPY_PROFILE_INFO_MENU_OPTION_3" = "Tam kullanıcı adını kopyala";
-"COPY_PROFILE_INFO_MENU_OPTION_4" = "Biyo linkini kopyala";
+"COPY_PROFILE_INFO_MENU_OPTION_3" = "İsmi kopyala";
+"COPY_PROFILE_INFO_MENU_OPTION_4" = "Web sitesini kopyala";
 "COPY_PROFILE_INFO_MENU_OPTION_5" = "Konumu kopyala";
+"COPY_PROFILE_INFO_MENU_OPTION_6" = "Profil bağlantısını kopyala";
 
 /*Theme*/
 "THEME_SETTINGS_NAVIGATION_TITLE" = "Temayı değiştir";
@@ -247,7 +285,7 @@
 
 /*Tab bar*/
 "CUSTOM_TAB_BAR_SETTINGS_NAVIGATION_TITLE" = "Sekmeleri düzenle";
-"CUSTOM_TAB_BAR_GRID_DETAIL" = "Tap a destination to add or remove it. Drag the bar below to reorder.";
+"CUSTOM_TAB_BAR_GRID_DETAIL" = "Eklemek veya kaldırmak için bir öğeye dokunun. Yeniden sıralamak için aşağıdaki çubuğu sürükleyin.";
 "CUSTOM_TAB_BAR_RESET_MESSAGE" = "Geçerli gezinme çubuğunu varsayılanlara döndürmek istediğinizden emin misiniz?";
 
 /* Restore tab labels */
@@ -264,44 +302,83 @@
 "RESTORE_TWITTER_NAMES_TITLE" = "Twitter terminolojisini geri yükle";
 "RESTORE_TWITTER_NAMES_DETAIL" = "Uygulama arayüzünde 'X' yerine 'Twitter', 'Post' yerine 'Tweet', 'Repost' yerine 'Retweet' gibi değişiklikleri geri getirir.";
 
+"BLUE_LAUNCH_SCREEN_TITLE" = "Mavi açılış ekranını geri yükle";
+"BLUE_LAUNCH_SCREEN_DETAIL" = "Orijinal mavi açılış ekranını geri getirir.";
+
+/*Dim Theme*/
+"ENABLE_DIM_THEME_TITLE" = "Alacakaranlık temasını etkinleştir";
+"ENABLE_DIM_THEME_DETAIL" = "Twitter'ın kaldırılan lacivert (dim) temasını geri getirir. Koyu modun açık olmasını ve uygulamanın yeniden başlatılmasını gerektirir.";
+"DIM_THEME_RESTART_ALERT_TITLE" = "Yeniden başlatma gerekli";
+"DIM_THEME_RESTART_ALERT_MESSAGE" = "Alacakaranlık temasının etkili olması için uygulamanın yeniden başlatılması gerekiyor.";
+"DIM_THEME_RESTART_ALERT_RESTART_BUTTON" = "Yeniden Başlat";
+
+"HIDE_VERIFIED_TWEETS_TITLE" = "Onaylı Tweetleri gizle";
+"HIDE_VERIFIED_TWEETS_DETAIL" = "Zaman akışınızda ve yanıtlarınızda onaylı hesapların Tweetlerini gizler (Yazar aynı ileti dizisinde yanıt vermediyse veya hesabı takip etmiyorsanız).";
+
+"HIDE_TWEET_BUTTON_TITLE" = "Tweet at butonunu gizle";
+"HIDE_TWEET_BUTTON_DETAIL" = "Gezinme çubuğundan Tweet at butonunu kaldırır.";
+
 /*Deprecated*/
 "MODERN_SETTINGS_PLACEHOLDER_TEXT" = "Henüz burada gösterilecek bir şey yok.";
 "MODERN_SETTINGS_PLACEHOLDER_DETAIL_TEXT" = "Bu bölüm yakında geliyor. Daha fazla NeoFreeBird özelliği için takipte kalın!";
 
 "SOURCE_UNAVAILABLE" = "Kaynak kullanılamıyor";
 
+"LOCATION_UNAVAILABLE" = "Konum Kullanılamıyor";
+
+"CONTRIBUTOR_PAGE_SECTION_HEADER_TITLE" = "Katkıda Bulunanlar";
+
 /*App lock*/
-"PADLOCK_LOCKED_LABEL" = "Locked";
+"PADLOCK_LOCKED_LABEL" = "Kilitli";
 
 /*Source labels*/
-"UNKNOWN_SOURCE" = "Unknown Source";
+"UNKNOWN_SOURCE" = "Bilinmeyen Kaynak";
 
 /*Media downloads*/
 "DOWNLOAD_VIDEO_NUMBER_TITLE" = "Video %lu";
-"UNKNOWN_ERROR" = "An unknown error occurred.";
+"UNKNOWN_ERROR" = "Bilinmeyen bir hata oluştu.";
 
 /*Custom fonts*/
-"INSTALL_IFONT_BUTTON_TITLE" = "iFont application";
-"FONT_SYSTEM_DEFAULT_SUBTITLE" = "System Default";
+"INSTALL_IFONT_BUTTON_TITLE" = "iFont uygulaması";
+"FONT_SYSTEM_DEFAULT_SUBTITLE" = "Sistem Varsayılanı";
 
 /*Legacy login*/
-"LEGACY_LOGIN_INFO_LABEL" = "Log in with your username and password.\n\nGoogle and Apple sign-in aren't supported. If your account uses one of those, add a password to it first.";
-"LEGACY_LOGIN_MISSING_INPUT_TITLE" = "Missing input";
-"LEGACY_LOGIN_MISSING_INPUT_MESSAGE" = "Enter username and password.";
-"LEGACY_LOGIN_VERIFYING_STATUS" = "Verifying…";
-"LEGACY_LOGIN_SIGNING_IN_STATUS" = "Signing in…";
-"LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Unavailable";
-"LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Login classes missing.";
-"LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "Could not build command.";
-"LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Crash avoided";
-"LEGACY_LOGIN_UNEXPECTED_RESPONSE_TITLE" = "Unexpected response";
-"LEGACY_LOGIN_NO_TOKEN_NO_CHALLENGE_MESSAGE" = "No token and no challenge.";
-"LEGACY_LOGIN_CHALLENGE_MISSING_INFO_MESSAGE" = "Challenge is missing its request id or URL.";
-"LEGACY_LOGIN_CHALLENGE_CLASSES_MISSING_MESSAGE" = "Challenge/host classes missing.";
-"LEGACY_LOGIN_BUILD_CHALLENGE_FAILED_MESSAGE" = "Could not build challenge.";
-"LEGACY_LOGIN_NO_TOKEN_MESSAGE" = "No token in response.";
-"LEGACY_LOGIN_FAILED_TITLE" = "Login failed";
-"LEGACY_LOGIN_NO_ACCOUNT_MESSAGE" = "No account was returned.";
-"LEGACY_LOGIN_RATE_LIMITED_TITLE" = "Likely rate limited (243)";
-"LEGACY_LOGIN_RATE_LIMITED_MESSAGE" = "Too many attempts. Wait a while or switch network/VPN, then try again.\n\nDetails:\n%@";
-"LEGACY_LOGIN_UNKNOWN_ERROR" = "Unknown error";
+"LEGACY_LOGIN_INFO_LABEL" = "Kullanıcı adınız ve şifrenizle giriş yapın.\n\nGoogle ve Apple ile giriş desteklenmemektedir. Hesabınız bunlardan birini kullanıyorsa önce bir şifre ekleyin.";
+"LEGACY_LOGIN_MISSING_INPUT_TITLE" = "Eksik bilgi";
+"LEGACY_LOGIN_MISSING_INPUT_MESSAGE" = "Kullanıcı adı ve şifreyi girin.";
+"LEGACY_LOGIN_VERIFYING_STATUS" = "Doğrulanıyor…";
+"LEGACY_LOGIN_SIGNING_IN_STATUS" = "Giriş yapılıyor…";
+"LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Kullanılamıyor";
+"LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Giriş sınıfları eksik.";
+"LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "Komut oluşturulamadı.";
+"LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Çökme engellendi";
+"LEGACY_LOGIN_UNEXPECTED_RESPONSE_TITLE" = "Beklenmeyen yanıt";
+"LEGACY_LOGIN_NO_TOKEN_NO_CHALLENGE_MESSAGE" = "Belirteç veya doğrulama yok.";
+"LEGACY_LOGIN_CHALLENGE_MISSING_INFO_MESSAGE" = "Doğrulamanın istek kimliği veya URL'si eksik.";
+"LEGACY_LOGIN_CHALLENGE_CLASSES_MISSING_MESSAGE" = "Doğrulama/sunucu sınıfları eksik.";
+"LEGACY_LOGIN_BUILD_CHALLENGE_FAILED_MESSAGE" = "Doğrulama oluşturulamadı.";
+"LEGACY_LOGIN_NO_TOKEN_MESSAGE" = "Yanıtta belirteç yok.";
+"LEGACY_LOGIN_FAILED_TITLE" = "Giriş başarısız";
+"LEGACY_LOGIN_NO_ACCOUNT_MESSAGE" = "Hiçbir hesap döndürülmedi.";
+"LEGACY_LOGIN_RATE_LIMITED_TITLE" = "Muhtemelen istek limiti aşıldı (243)";
+"LEGACY_LOGIN_RATE_LIMITED_MESSAGE" = "Çok fazla deneme yapıldı. Bir süre bekleyin veya ağı/VPN'i değiştirip tekrar deneyin.\n\nDetaylar:\n%@";
+"LEGACY_LOGIN_UNKNOWN_ERROR" = "Bilinmeyen hata";
+
+/* Subscription Keys */
+"SUBSCRIPTION_APP_ICON_SETTINGS_TITLE" = "Uygulama simgesi";
+"SUBSCRIPTION_APP_ICON_SETTINGS_DETAIL" = "Cihazınızın ana ekranı için özel bir uygulama simgesi seçin. İstediğiniz zaman değiştirin.";
+
+"SUBSCRIPTION_TAB_CUSTOMIZATION_RESTORE_BUTTON_TITLE" = "Varsayılana sıfırla";
+"Restore to default" = "Varsayılana sıfırla";
+
+"SUBSCRIPTION_UNDO_SEND_DURATION_TITLE" = "Geri alma süresi";
+"SUBSCRIPTION_UNDO_SEND_DURATION_DETAIL" = "Tweet atıldıktan sonra geri alma butonunun ne kadar süre kalacağını seçin.";
+
+/* Common UI Elements & Time Selectors */
+"Off" = "Kapalı";
+"Cancel" = "Vazgeç";
+"5 seconds" = "5 saniye";
+"10 seconds" = "10 saniye";
+"20 seconds" = "20 saniye";
+"30 seconds" = "30 saniye";
+"60 seconds" = "60 saniye";

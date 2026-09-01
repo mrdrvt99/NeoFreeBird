@@ -55,6 +55,10 @@
 # Downloading
 Go to the [Releases](https://github.com/orionblur/NeoFreeBird/releases) page to download the latest version of NeoFreeBird-BHTwitter. You can also build it yourself by following the instructions below.
 
+# Supporting the Project
+
+I welcome all help on NeoFreeBird! Translations, bug fixes, and new features are all welcome. If you do see any issues with the app, feel free to open an issue and follow the templates provided. I also have a Ko-Fi linked in the repo if you wish to support me directly, but by no means is it required! NeoFreeBird will always be open-source and free to use.
+
 # Compiling NeoFreeBird-BHTwitter
 
 ## Using your computer

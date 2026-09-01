@@ -5,6 +5,8 @@
 //  Created by BandarHelal.
 //
 
+#include <stdlib.h>
+
 #import "Core/BHTManager.h"
 #import "Core/BHTBundle.h"
 #import "Core/BHTSettings.h"
@@ -145,6 +147,20 @@
             isEqual:@"Twitter"];
     });
     return branded;
+}
+
+// LiveContainer runs a guest app inside its own process rather than installing
+// it, and exports the guest's redirected home directory to it. Both variables
+// come straight from LiveContainer's guest-side hooks (LC_HOME_PATH normally,
+// LP_HOME_PATH in LiveProcess mode), so checking for either is more durable
+// than matching on the guest's bundle path layout.
++ (BOOL)isLiveContainer {
+    static BOOL liveContainer = NO;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        liveContainer = getenv("LC_HOME_PATH") != NULL || getenv("LP_HOME_PATH") != NULL;
+    });
+    return liveContainer;
 }
 
 + (UIViewController*)BHTSettingsWithAccount:(TFNTwitterAccount*)twAccount {

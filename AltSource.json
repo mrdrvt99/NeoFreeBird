@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.5.0",
+      "subtitle": "NeoFreeBird version 6.5.1",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -30,6 +30,15 @@
         {
           "version": "12.15",
           "buildVersion": "11",
+          "date": "2026-08-27T00:20:19Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.5.1/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.5.1_12.15.ipa",
+          "size": 227396013,
+          "minOSVersion": "15.0",
+          "localizedDescription": "New Features\n- Added option to disable the new media carousel (switches back to old grid view)\n\nFixes\n- Fixed the “Confirm Follow” feature\n- Added more Japanese translations (thank you @so-5699)\n- Changed tap to pause to use 2 fingers instead of one (this now allows you to dismiss the media view)\n- The in-app browser is off by default in LiveContainer installs (thank you @PeekPerformer)\n- Fixed a hang on first startup in LiveContainer installs (thank you @PeekPerformer)"
+        },
+        {
+          "version": "12.15",
+          "buildVersion": "1",
           "date": "2026-08-16T20:28:36Z",
           "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.5.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.5.0_12.15.ipa",
           "size": 227365601,

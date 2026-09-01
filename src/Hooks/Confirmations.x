@@ -5,6 +5,11 @@
 
 #import "HookHelpers.h"
 
+// Set while a block confirmation alert is expected, so the alert can be
+// answered without being shown (Fast block/mute, below).
+static BOOL awaitingBlockAlert = NO;
+static char kBlockConfirmHandlerKey;
+
 static void ShowConfirmation(void (^confirmed)(void)) {
     [%c(FLEXAlert)
         makeAlert:^(FLEXAlert* make) {
@@ -40,11 +45,39 @@ static void ShowConfirmation(void (^confirmed)(void)) {
 
 %end
 
+%hook T1PersistentComposeViewController
+- (void)_t1_sendReply {
+    if (![BHTSettings boolForKey:@"tweet_confirm"]) {
+        return %orig;
+    }
+
+    ShowConfirmation(^{
+        %orig;
+    });
+}
+
+%end
+
 // MARK: - Follow confirm
+
 
 %hook TUIFollowControl
 
 - (void)_followUser:(id)sender event:(id)event {
+    if (![BHTSettings boolForKey:@"follow_confirm"]) {
+        return %orig;
+    }
+
+    ShowConfirmation(^{
+        %orig;
+    });
+}
+
+%end
+
+%hook TUIFollowButtonV2
+
+- (void)buttonTapped {
     if (![BHTSettings boolForKey:@"follow_confirm"]) {
         return %orig;
     }
@@ -101,6 +134,123 @@ static void ShowConfirmation(void (^confirmed)(void)) {
     ShowConfirmation(^{
         %orig;
     });
+}
+
+%end
+
+// MARK: - Fast block/mute
+
+static BOOL FastBlockEnabled(void) {
+    return [BHTSettings boolForKey:@"fast_block"];
+}
+
+// The mute alert is requested by the caller rather than by the mute itself.
+%hook T1TabbedAppNavigation
+
+- (void)muteActionForUser:(id)user
+                    isMuting:(BOOL)muting
+    showConfirmationIfNeeded:(BOOL)needed
+                impressionID:(id)impressionID
+                  isPromoted:(BOOL)promoted
+                    isEarned:(BOOL)earned
+                  scribePage:(id)page
+               scribeSection:(id)section
+             scribeComponent:(id)component
+            scribeParameters:(id)parameters
+                  completion:(id)completion {
+    %orig(user, muting, FastBlockEnabled() ? NO : needed, impressionID, promoted,
+          earned, page, section, component, parameters, completion);
+}
+
+- (void)_showBlockStatusForContext:(id)context source:(long long)source {
+    awaitingBlockAlert = FastBlockEnabled();
+    %orig;
+}
+
+- (void)_showBlockMessageForContext:(id)context source:(long long)source {
+    awaitingBlockAlert = FastBlockEnabled();
+    %orig;
+}
+
+%end
+
+%hook UIAlertController
+
+// Both block alerts get their cancel action from the constructor and add
+// exactly one destructive action, which is the one that does the blocking.
+- (id)tfn_addActionWithTitle:(NSString*)title
+                       style:(UIAlertActionStyle)style
+                     handler:(void (^)(void))handler {
+    if (awaitingBlockAlert && style == UIAlertActionStyleDestructive && handler) {
+        objc_setAssociatedObject(self, &kBlockConfirmHandlerKey, handler,
+                                 OBJC_ASSOCIATION_COPY_NONATOMIC);
+    }
+    return %orig;
+}
+
+- (void)tfn_presentFromViewController:(UIViewController*)viewController {
+    if (!awaitingBlockAlert) {
+        return %orig;
+    }
+    awaitingBlockAlert = NO;
+
+    // Anything else reaching presentation while armed — an error alert raised
+    // during the dismissal, say — has no captured handler and is left alone.
+    void (^confirm)(void) = objc_getAssociatedObject(self, &kBlockConfirmHandlerKey);
+    if (!confirm) {
+        return %orig;
+    }
+
+    objc_setAssociatedObject(self, &kBlockConfirmHandlerKey, nil,
+                             OBJC_ASSOCIATION_COPY_NONATOMIC);
+    confirm();
+}
+
+%end
+
+// Block from the follow control on profiles and user rows, which shows a menu
+// sheet rather than an alert. Its action calls -_doBlockUser:event:, so the
+// sheet can be skipped by going there directly.
+%hook TUIFollowControl
+
+- (void)_blockUser:(id)user event:(id)event {
+    if (!FastBlockEnabled()) {
+        return %orig;
+    }
+    [self _doBlockUser:user event:event];
+}
+
+- (void)_unblockUser:(id)user event:(id)event {
+    if (!FastBlockEnabled()) {
+        return %orig;
+    }
+    [self _doUnblockUser:user event:event];
+}
+
+- (void)_blockMessageUser:(id)user event:(id)event {
+    if (!FastBlockEnabled()) {
+        return %orig;
+    }
+    [self _doBlockMessageUser:user event:event];
+}
+
+- (void)_unblockMessageUser:(id)user event:(id)event {
+    if (!FastBlockEnabled()) {
+        return %orig;
+    }
+    [self _doUnblockMessageUser:user event:event];
+}
+
+%end
+
+%hook TUIFollowButtonV2
+
+- (void)setConfirmBlock:(BOOL)confirmBlock {
+    %orig(FastBlockEnabled() ? NO : confirmBlock);
+}
+
+- (BOOL)confirmBlock {
+    return FastBlockEnabled() ? NO : %orig;
 }
 
 %end

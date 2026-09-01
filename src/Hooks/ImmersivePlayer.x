@@ -177,28 +177,79 @@ static BOOL isImmersiveCardPan(id viewController,
     return panIvar && object_getIvar(viewController, panIvar) == gesture;
 }
 
+static BOOL isUpwardPan(UIGestureRecognizer *gesture) {
+    if (![gesture isKindOfClass:[UIPanGestureRecognizer class]]) return NO;
+    UIPanGestureRecognizer *pan = (UIPanGestureRecognizer *)gesture;
+    CGPoint v = [pan velocityInView:gesture.view];
+    return v.y < 0.0;
+}
+
 %hook T1ImmersiveViewController
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gesture {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gesture {
     if ([BHTSettings boolForKey:@"disable_immersive_scroll"] &&
         isImmersiveCardPan(self, gesture)) {
+        if (isUpwardPan(gesture)) {
+            return NO;
+        }
+        return YES;
+    }
+
+    return %orig;
+}
+
+- (BOOL)allowsUpwardSwipeToDismiss {
+    if ([BHTSettings boolForKey:@"disable_immersive_scroll"]) {
         return NO;
     }
 
     return %orig;
 }
 
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    if ([BHTSettings boolForKey:@"disable_immersive_scroll"]) {
+        CGPoint v = [pan velocityInView:self.view];
+        if (v.y < 0.0) {
+            return;
+        }
+    }
+
+    %orig(pan);
+}
+
 %end
 
 %hook T1ImmersiveViewControllerV2
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gesture {
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gesture {
     if ([BHTSettings boolForKey:@"disable_immersive_scroll"] &&
         isImmersiveCardPan(self, gesture)) {
+        if (isUpwardPan(gesture)) {
+            return NO;
+        }
+        return YES;
+    }
+
+    return %orig;
+}
+
+- (BOOL)allowsUpwardSwipeToDismiss {
+    if ([BHTSettings boolForKey:@"disable_immersive_scroll"]) {
         return NO;
     }
 
     return %orig;
+}
+
+- (void)handlePan:(UIPanGestureRecognizer *)pan {
+    if ([BHTSettings boolForKey:@"disable_immersive_scroll"]) {
+        CGPoint v = [pan velocityInView:self.view];
+        if (v.y < 0.0) {
+            return;
+        }
+    }
+
+    %orig(pan);
 }
 
 %end
@@ -219,11 +270,31 @@ static void togglePlayback(TAVPlayer* player) {
     }
 }
 
+static const void* kBHTTwoFingerTapKey = &kBHTTwoFingerTapKey;
+
 %hook _TtC14T1TwitterSwift17ImmersiveCardView
 
-- (void)handleSingleTap:(UITapGestureRecognizer*)tap {
+- (void)didMoveToWindow {
+    %orig;
+
+    if (!self.window || objc_getAssociatedObject(self, kBHTTwoFingerTapKey)) {
+        return;
+    }
+
+    UITapGestureRecognizer* tap = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(bht_handleTwoFingerTap:)];
+    tap.numberOfTouchesRequired = 2;
+    tap.numberOfTapsRequired = 1;
+    [self addGestureRecognizer:tap];
+
+    objc_setAssociatedObject(self, kBHTTwoFingerTapKey, tap,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+%new
+- (void)bht_handleTwoFingerTap:(UITapGestureRecognizer*)tap {
     if (![BHTSettings boolForKey:@"tap_to_pause"]) {
-        %orig; 
         return;
     }
 
@@ -237,13 +308,13 @@ static void togglePlayback(TAVPlayer* player) {
 
     TAVPlayer* player = pageView ? immersivePagePlayer(pageView) : nil;
     if (!player) {
-        %orig;
         return;
     }
 
     BOOL wasPlaying = player.playbackState.timeControlStatus != 0;
     togglePlayback(player);
-    [self setPausedByUser:wasPlaying];  
+
+    [self setPausedByUser:wasPlaying];
 }
 
 %end

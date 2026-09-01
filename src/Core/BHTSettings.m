@@ -91,6 +91,8 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                       @"default": @NO},
                     @{@"key": @"hide_custom_timelines",
                       @"default": @NO},
+                    @{@"key": @"hide_blocked_retweets",
+                      @"default": @NO},
                     @{@"key": @"hide_tweet_button",
                       @"default": @NO},
                     @{@"key": @"hide_verified_tweets",
@@ -187,6 +189,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"type": @"toggle"
                     },
                     @{
+                        @"key": @"fast_block",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
                         @"key": @"disable_articles",
                         @"default": @YES,
                         @"type": @"toggle"
@@ -274,6 +281,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     },
                     @{
                         @"key": @"hide_downvote_button",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"disable_media_carousel",
                         @"default": @NO,
                         @"type": @"toggle"
                     },
@@ -382,8 +394,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     },
                     @{@"key": @"always_open_safari",
                       @"default": @NO},
+                    // X's new article webview does not work under
+                    // LiveContainer, so default it off there rather than
+                    // forcing the switch on for every guest install.
                     @{@"key": @"new_inapp_webview",
-                      @"default": @YES}
+                      @"default": @(![BHTManager isLiveContainer])}
                 ]
             },
             @"debug": @{

@@ -35,6 +35,11 @@ static void PresentCopyProfileInfoSheet(T1ProfileUserViewModel* viewModel) {
         addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_6", @"link",
                     [NSString stringWithFormat:@"https://x.com/%@", viewModel.username]);
     }
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_7", @"bar_chart", [NSString stringWithFormat:@"%ld", (long)viewModel.userDataSource.user.userID]);
+    NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+    dateFormatter.dateStyle = NSDateFormatterLongStyle;
+    addCopyItem(@"COPY_PROFILE_INFO_MENU_OPTION_8", @"calendar",
+                [dateFormatter stringFromDate:viewModel.userDataSource.user.createdDate]);
 
     if (!items.count) {
         return;

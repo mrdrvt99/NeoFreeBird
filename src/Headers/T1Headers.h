@@ -23,6 +23,22 @@
 @interface TUIFollowControlCustomScreenshot : UIView
 @end
 
+// Follow/block control on profiles and user rows. Each destructive action is
+// split in two: -_blockUser:event: puts up the confirmation and -_doBlockUser:
+// event: is what its confirm button ends up calling.
+@interface TUIFollowControl : UIView
+@property (nonatomic) BOOL confirmBlock;
+- (void)_doBlockUser:(id)user event:(id)event;
+- (void)_doUnblockUser:(id)user event:(id)event;
+- (void)_doBlockMessageUser:(id)user event:(id)event;
+- (void)_doUnblockMessageUser:(id)user event:(id)event;
+@end
+
+@interface TUIFollowButtonV2: UIControl
+@property (nonatomic) BOOL confirmBlock;
+- (void)buttonTapped;
+@end
+
 @interface TTMAssetVideoFile : NSObject
 @property (nonatomic, copy, readonly) NSString* filePath;
 @property (nonatomic, assign, readonly) CGFloat duration;
@@ -100,6 +116,7 @@
 @property (readonly, copy, nonatomic) NSString* username;
 @property (readonly, copy, nonatomic) NSString* bio;
 @property (readonly, copy, nonatomic) NSString* url;
+@property (readonly, copy, nonatomic) TFNTwitterUserDataSource* userDataSource;
 @property (readonly, nonatomic) NSNumber* tweetCount;
 @end
 
@@ -115,6 +132,7 @@
 @property (retain, nonatomic) T1ProfileUserViewModel* viewModel;
 - (id)_tweetsSubtitle;
 @end
+
 
 #pragma mark - Status views
 
@@ -133,6 +151,22 @@
 
 @interface T1PersistentComposeViewController : UIViewController
 @property (readonly, nonatomic) id statusViewModel;
+-(void)_t1_sendReply;
+@end
+
+@interface T1ImmersiveFullScreenViewController : UIViewController
+@property (retain, nonatomic) UIPanGestureRecognizer *dismissGesture;
+@end
+
+@interface T1ImmersiveViewController : UIViewController
+@end
+
+@interface T1ImmersiveViewControllerV2 : UIViewController
+@end
+
+@interface T1URTTimelineStatusItemViewModel : NSObject
+@property (nonatomic, readonly) BOOL isRetweet;
+@property (nonatomic, readonly) TFNTwitterUser* representedFromUser;
 @end
 
 @protocol TTACoreStatusViewEventHandler <NSObject>

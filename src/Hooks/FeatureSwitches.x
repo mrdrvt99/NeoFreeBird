@@ -211,6 +211,14 @@ static NSNumber* FeatureSwitchOverrideValueForKey(NSString* key) {
         return @(![BHTSettings boolForKey:@"restore_reply_context"]);
     }
 
+    if ([key isEqualToString:@"ios_ui_multi_media_carousel_avatar_avoidance_enabled"] ||
+        [key isEqualToString:@"ios_ui_multi_media_carousel_enabled"] ||
+        [key isEqualToString:@"ios_ui_quote_tweet_multi_media_carousel_enabled"]) {
+        if ([BHTSettings boolForKey:@"disable_media_carousel"]) {
+            return @NO;
+        }
+    }
+
     // Video captions
     if ([key isEqualToString:@"ios_tav_default_closed_captions_enabled"] ||
         [key isEqualToString:@"ios_audio_transcription_subtitles_vod_enabled"]) {

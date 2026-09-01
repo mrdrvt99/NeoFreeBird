@@ -21,5 +21,6 @@
 + (NSString*)getDownloadingPercent:(float)progress;
 
 + (BOOL)isTwitterBranded;
++ (BOOL)isLiveContainer;
 
 @end

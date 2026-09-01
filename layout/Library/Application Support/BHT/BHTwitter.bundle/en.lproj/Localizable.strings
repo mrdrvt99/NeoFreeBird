@@ -10,6 +10,9 @@
 
 "CONFIRM_ALERT_MESSAGE" = "Sure you meant to do that?";
 
+"YES_ACTION_LABEL" = "Yes";
+"NO_ACTION_LABEL" = "No";
+
 /*Settings*/
 "MODERN_SETTINGS_LAYOUT_TITLE" = "General";
 "MODERN_SETTINGS_LAYOUT_SUBTITLE" = "Lock the app, keep the navigation bar visible, and more.";
@@ -65,6 +68,9 @@
 "HIDE_TIMELINE_PROMPTS_TITLE" = "No timeline prompts";
 "HIDE_TIMELINE_PROMPTS_DETAIL" = "Remove banners like 'Add contacts'.";
 
+"HIDE_BLOCKED_RETWEETS_TITLE" = "Hide blocked retweets";
+"HIDE_BLOCKED_RETWEETS_DETAIL" = "Hide retweets of accounts who've blocked you.";
+
 "PADLOCK_TITLE" = "Lock Twitter";
 "PADLOCK_DETAIL" = "Require Face ID or a passcode to open Twitter.";
 
@@ -97,6 +103,9 @@
 
 "HIDE_VIEW_COUNT_TITLE" = "Hide views";
 "HIDE_VIEW_COUNT_DETAIL" = "Don't show views under Tweets.";
+
+"DISABLE_MEDIA_CAROUSEL_TITLE" = "Disable media carousel";
+"DISABLE_MEDIA_CAROUSEL_DETAIL" = "Reverts the new look for mulitple media attachments.";
 
 "HIDE_BOOKMARK_BUTTON_TITLE" = "Hide bookmarks";
 "HIDE_BOOKMARK_BUTTON_DETAIL" = "Remove the bookmark button from Tweets.";
@@ -147,6 +156,9 @@
 "COPY_PROFILE_INFO_TITLE" = "Copy profile details";
 "COPY_PROFILE_INFO_DETAIL" = "Copy usernames, bios, and more with one tap.";
 
+"FAST_BLOCK_TITLE" = "Fast block/mute";
+"FAST_BLOCK_DETAIL" = "Block or mute accounts without the confirmation dialog.";
+
 "DISABLE_ARTICLES_TITLE" = "No Articles tab";
 "DISABLE_ARTICLES_DETAIL" = "Hide the Articles tab in profiles.";
 
@@ -181,7 +193,7 @@
 "RESTORE_VIDEO_TIMESTAMP_DETAIL" = "Shows timestamp on immersive player.";
 
 "TAP_TO_PAUSE_TITLE" = "Tap to pause videos";
-"TAP_TO_PAUSE_DETAIL" = "Tap on a video to pause it, instead of having to use the pause button.";
+"TAP_TO_PAUSE_DETAIL" = "Tap with 2 fingers on a video to pause it, instead of having to use the pause button.";
 
 "DISABLE_IMMERSIVE_SCROLL_TITLE" = "No video feed scrolling";
 
@@ -272,6 +284,8 @@
 "COPY_PROFILE_INFO_MENU_OPTION_4" = "Copy website";
 "COPY_PROFILE_INFO_MENU_OPTION_5" = "Copy location";
 "COPY_PROFILE_INFO_MENU_OPTION_6" = "Copy profile URL";
+"COPY_PROFILE_INFO_MENU_OPTION_7" = "Copy user ID";
+"COPY_PROFILE_INFO_MENU_OPTION_8" = "Copy date joined";
 
 /*Theme*/
 "THEME_SETTINGS_NAVIGATION_TITLE" = "Theme";

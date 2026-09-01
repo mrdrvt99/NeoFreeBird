@@ -37,9 +37,14 @@
 @property (readonly, copy, nonatomic) NSString* expandedURL;
 @end
 
-// Relationship states are 1 = yes, 2 = no.
 @interface TFSTwitterRelationship : NSObject
 @property (readonly, nonatomic) NSInteger superFollowingState;
+@property (readonly, nonatomic) long long followedByCurrentAccountState;
+@property (readonly, nonatomic) long long followingCurrentAccountState;
+@property (readonly, nonatomic) long long followRequestSentByCurrentAccountState;
+@property (readonly, nonatomic) long long blockedByCurrentAccountState;
+@property (readonly, nonatomic) long long blockingCurrentAccountState;
+@property (readonly, nonatomic) long long mutedByCurrentAccountState;
 @end
 
 @interface NSNumber (TFSTwitter)

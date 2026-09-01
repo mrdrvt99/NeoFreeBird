@@ -229,6 +229,38 @@ static long long ItemInReplyToUserID(id viewModel) {
 // 2 no); if follows still get hidden, flip this to the value logged for a
 // known-followed account.
 static const NSInteger kFollowedByCurrentAccountStateFollowing = 1;
+static const NSInteger kBlockingCurrentAccountStateBlocking = 1;
+
+static BOOL UserBlocksCurrentAccount(id user) {
+    SEL relationshipSelector = @selector(relationship);
+    if (![user respondsToSelector:relationshipSelector]) {
+        return NO;
+    }
+
+    id relationship = ((id (*)(id, SEL))objc_msgSend)(user, relationshipSelector);
+    SEL blockingSelector = @selector(blockingCurrentAccountState);
+    if (![relationship respondsToSelector:blockingSelector]) {
+        return NO;
+    }
+
+    NSInteger blockingState =
+        ((NSInteger (*)(id, SEL))objc_msgSend)(relationship, blockingSelector);
+    return blockingState == kBlockingCurrentAccountStateBlocking;
+}
+
+static BOOL ItemIsRetweetOfBlockingUser(id viewModel) {
+    if (!ItemRespondsAndInvokesBOOL(viewModel, @selector(isRetweet))) {
+        return NO;
+    }
+
+    SEL authorSelector = @selector(representedFromUser);
+    if (![viewModel respondsToSelector:authorSelector]) {
+        return NO;
+    }
+
+    return UserBlocksCurrentAccount(
+        ((id (*)(id, SEL))objc_msgSend)(viewModel, authorSelector));
+}
 
 static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
                                      long long conversationRootUserID,
@@ -285,7 +317,8 @@ static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
 }
 
 static BOOL ShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePrompts,
-                                   BOOL hideVerified, BOOL inConversation, BOOL inProfile,
+                                   BOOL hideVerified, BOOL hideBlockedRetweets,
+                                   BOOL inConversation, BOOL inProfile,
                                    long long conversationRootUserID,
                                    NSSet<NSNumber*>* authorRepliedToUserIDs) {
     id viewModel = unwrapDataViewItem(item);
@@ -293,6 +326,10 @@ static BOOL ShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePromp
 
     if (hideVerified && BHShouldHideVerifiedItem(viewModel, inConversation, conversationRootUserID,
                                                  authorRepliedToUserIDs)) {
+        return YES;
+    }
+
+    if (hideBlockedRetweets && ItemIsRetweetOfBlockingUser(viewModel)) {
         return YES;
     }
 
@@ -330,8 +367,9 @@ static BOOL ShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePromp
 // More efficient way to filter timeline items than calling ShouldHideTimelineItem() repeatedly, which
 // slows down the app a LOT
 static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePrompts,
-                                           BOOL hideVerified, BOOL inConversation,
-                                           BOOL inProfile, long long conversationRootUserID,
+                                           BOOL hideVerified, BOOL hideBlockedRetweets,
+                                           BOOL inConversation, BOOL inProfile,
+                                           long long conversationRootUserID,
                                            NSSet<NSNumber*>* authorRepliedToUserIDs) {
     static NSCache<NSString*, NSNumber*>* cache;
     static NSUInteger cachedFlags = NSUIntegerMax;
@@ -345,7 +383,7 @@ static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL h
 
     
     NSUInteger flags = (hideWhoToFollow << 0) | (hidePrompts << 1) | (hideVerified << 2) |
-                       (inConversation << 3) | (inProfile << 4);
+                       (inConversation << 3) | (inProfile << 4) | (hideBlockedRetweets << 5);
     BOOL repliedSetChanged = authorRepliedToUserIDs != cachedAuthorRepliedToUserIDs &&
                              ![authorRepliedToUserIDs isEqualToSet:cachedAuthorRepliedToUserIDs];
     if (flags != cachedFlags || conversationRootUserID != cachedRootUserID || repliedSetChanged) {
@@ -358,8 +396,8 @@ static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL h
     NSString* entryID = ItemEntryID(unwrapDataViewItem(item));
     if (!entryID) {
         return ShouldHideTimelineItem(item, hideWhoToFollow, hidePrompts, hideVerified,
-                                      inConversation, inProfile, conversationRootUserID,
-                                      authorRepliedToUserIDs);
+                                      hideBlockedRetweets, inConversation, inProfile,
+                                      conversationRootUserID, authorRepliedToUserIDs);
     }
 
     NSNumber* cached = [cache objectForKey:entryID];
@@ -368,8 +406,8 @@ static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL h
     }
 
     BOOL hide = ShouldHideTimelineItem(item, hideWhoToFollow, hidePrompts, hideVerified,
-                                       inConversation, inProfile, conversationRootUserID,
-                                       authorRepliedToUserIDs);
+                                       hideBlockedRetweets, inConversation, inProfile,
+                                       conversationRootUserID, authorRepliedToUserIDs);
     [cache setObject:@(hide) forKey:entryID];
     return hide;
 }
@@ -439,8 +477,10 @@ static NSArray* FilteredTimelineSections(TFNItemsDataViewController* dataViewCon
     BOOL inProfile = IsInHierarchyOfClass(dataViewController, @"T1ProfileViewController");
 
     BOOL hideVerified = [BHTSettings boolForKey:@"hide_verified_tweets"] && !inProfile;
+    BOOL hideBlockedRetweets = [BHTSettings boolForKey:@"hide_blocked_retweets"];
 
-    if (!hideWhoToFollow && !hidePrompts && !hideVerified && !inConversation) {
+    if (!hideWhoToFollow && !hidePrompts && !hideVerified && !hideBlockedRetweets &&
+        !inConversation) {
         return sections;
     }
 
@@ -467,8 +507,8 @@ static NSArray* FilteredTimelineSections(TFNItemsDataViewController* dataViewCon
 
         for (NSUInteger i = 0; i < items.count; i++) {
             if (MemoizedShouldHideTimelineItem(items[i], hideWhoToFollow, hidePrompts, hideVerified,
-                                               inConversation, inProfile, conversationRootUserID,
-                                               authorRepliedToUserIDs)) {
+                                               hideBlockedRetweets, inConversation, inProfile,
+                                               conversationRootUserID, authorRepliedToUserIDs)) {
                 [removed addIndex:i];
             }
         }
