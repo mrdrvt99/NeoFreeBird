@@ -79,14 +79,14 @@
 
     [alert addAction:[UIAlertAction
                          actionWithTitle:[[BHTBundle sharedBundle]
-                                             localizedTwitterStringForKey:@"CANCEL_ACTION_LABEL"]
+                                             localizedStringForKey:@"CANCEL_ACTION_LABEL"]
                                    style:UIAlertActionStyleCancel
                                  handler:nil]];
 
     [alert
         addAction:[UIAlertAction
                       actionWithTitle:[[BHTBundle sharedBundle]
-                                          localizedTwitterStringForKey:@"SAVE_ACTION_LABEL"]
+                                          localizedStringForKey:@"SAVE_ACTION_LABEL"]
                                 style:UIAlertActionStyleDefault
                               handler:^(UIAlertAction* action) {
                                   NSString* domain =

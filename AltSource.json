@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.5.1",
+      "subtitle": "NeoFreeBird version 6.6.1",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -27,6 +27,24 @@
         "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/images/timeline/timeline5.png"
       ],
       "versions": [
+        {
+          "version": "12.21",
+          "buildVersion": "26",
+          "date": "2026-09-04T02:06:18Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.6.1/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.6.1_12.21.ipa",
+          "size": 247796819,
+          "minOSVersion": "15.0",
+          "localizedDescription": "Version 6.6.1\n\nFixes\n- Fixed voice message downloading (now requires 2 fingers with a long press)\n- Fixed a crash that would happen when encountering any confirmation prompt"
+        },
+        {
+          "version": "12.21",
+          "buildVersion": "1",
+          "date": "2026-09-03T00:46:01Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.6.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.6.0_12.21.ipa",
+          "size": 247796003,
+          "minOSVersion": "15.0",
+          "localizedDescription": "New Features\n- Updated X to 12.21\n- Added ability to remove retweets of tweets from users who’ve blocked you\n- Doomscrolling can now be turned off with disabling video scroll\n\n**Fixes**\n- Fixed X branding in newer versions\n- Added Turkish, Japanese, and Spanish localizations\n\nKnown Issues\n- Downloading voice messages and bypassing screenshot detection are broken, will be fixed soon™."
+        },
         {
           "version": "12.15",
           "buildVersion": "11",

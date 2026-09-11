@@ -12,6 +12,12 @@
 
 "YES_ACTION_LABEL" = "Yes";
 "NO_ACTION_LABEL" = "No";
+"CANCEL_ACTION_LABEL" = "Cancel";
+"CONTINUE_ACTION_LABEL" = "Continue";
+"DONE" = "Done";
+"SAVE" = "Save";
+"SAVE_ACTION_LABEL" = "Save";
+
 
 /*Settings*/
 "MODERN_SETTINGS_LAYOUT_TITLE" = "General";
@@ -144,7 +150,7 @@
 "HIDE_TYPING_INDICATOR_DETAIL" = "Stop sending the \"typing...\" indicator to other people in chats.";
 
 "DOWNLOAD_VOICE_MESSAGES_TITLE" = "Download voice messages";
-"DOWNLOAD_VOICE_MESSAGES_DETAIL" = "Save voice messages to your device after playing them (long-press on an audio message to download it).";
+"DOWNLOAD_VOICE_MESSAGES_DETAIL" = "Save voice messages to your device after playing them (long-press on an audio message with 2 fingers to download it).";
 
 "BLOCK_SCREENSHOT_DETECTION_TITLE" = "Block screenshot detection";
 "BLOCK_SCREENSHOT_DETECTION_DETAIL" = "Allows you to screenshot \"secure\" chats without being blocked.";
@@ -371,3 +377,29 @@
 "LEGACY_LOGIN_RATE_LIMITED_TITLE" = "Likely rate limited (243)";
 "LEGACY_LOGIN_RATE_LIMITED_MESSAGE" = "Too many attempts. Wait a while or switch network/VPN, then try again.\n\nDetails:\n%@";
 "LEGACY_LOGIN_UNKNOWN_ERROR" = "Unknown error";
+
+"DOWNLOAD_ACTIVITY_VIEW_LABEL" = "Download media";
+"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING" = "Downloading";
+
+/* Subscription Keys */
+"SUBSCRIPTION_APP_ICON_SETTINGS_TITLE" = "Change app icon";
+"SUBSCRIPTION_APP_ICON_SETTINGS_DETAIL" = "Choose a custom app icon for your device's home screen. Change it at any time.";
+
+"SUBSCRIPTION_TAB_CUSTOMIZATION_RESTORE_BUTTON_TITLE" = "Restore to default";
+"Restore to default" = "Restore to default";
+
+"SUBSCRIPTION_UNDO_SEND_DURATION_TITLE" = "Undo Duration";
+"SUBSCRIPTION_UNDO_SEND_DURATION_DETAIL" = "Choose how long the undo button will remain after sending a tweet.";
+
+/* Common UI Elements & Time Selectors */
+"Off" = "Off";
+"Cancel" = "Cancel";
+"5 seconds" = "5 seconds";
+"10 seconds" = "10 seconds";
+"20 seconds" = "20 seconds";
+"30 seconds" = "30 seconds";
+"60 seconds" = "60 seconds";
+
+/* Undo Duration Labels (Added for TweetsSettingsViewController) */
+"GENERIC_OFF_LABEL" = "Off";
+"SUBSCRIPTION_UNDO_SEND_DURATION_LABEL" = "%ld seconds";

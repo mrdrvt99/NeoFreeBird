@@ -186,3 +186,20 @@
 + (void)tfn_vectorImageSetOverrideContainerName:(NSString*)arg1;
 + (NSString*)tfn_vectorImageOverrideContainerName;
 @end
+
+
+@interface _TtC10TFNUISwift26LegacySegmentedTabBarStyle : NSObject
+@property (nonatomic, retain) UIColor* highlightBarColor;
+@property (nonatomic) double highlightBarHeight;
+@property (nonatomic) BOOL showsHighlightBar;
+@property (nonatomic, retain) UIColor* selectedTextColor;
+@property (nonatomic, retain) UIColor* deselectedTextColor;
+@end
+
+@interface _TtC10TFNUISwift31LegacySegmentedHighlightBarView : UIView
+@end
+
+@interface _TtC10TFNUISwift25LegacySegmentedTabBarView : UIView
+@property (nonatomic, retain) _TtC10TFNUISwift26LegacySegmentedTabBarStyle* style;
+@property (nonatomic) long long selectedIndex;
+@end

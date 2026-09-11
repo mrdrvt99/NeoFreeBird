@@ -2,16 +2,6 @@
 """Override vector glyphs inside the app's TwitterAppearance bundles.
 
 Usage: override_appearance_svgs.py <app_dir> <svg_dir>
-
-The app ships several copies of TwitterAppearance_TwitterAppearance.bundle (one
-in the main app plus one per PlugIns/*.appex), each holding VectorImages/main/
-(UI glyphs) and VectorImages/twemoji/ (emoji). We target VectorImages/main only.
-For each *.svg in <svg_dir> we replace every existing main glyph of the same
-name across all those bundles, so every surface (app, widgets, notifications,
-share sheet) stays consistent.
-
-Only existing glyphs are replaced; a provided svg matching nothing is ignored
-(we never add new glyphs). Invoked from ipa-branding.sh.
 """
 
 import os
@@ -28,6 +18,7 @@ def main():
     # Index the VectorImages/main glyphs of every TwitterAppearance bundle by
     # basename (twemoji and other subfolders are intentionally left alone). Each
     # entry also records the bundle root so we can drop its stale seal later.
+    # A build that keeps no loose glyphs simply leaves this empty.
     index = {}  # basename -> [(path, bundle_root)]
     for root, dirs, _files in os.walk(app_dir):
         dirs[:] = [d for d in dirs if d != "__MACOSX"]
@@ -43,14 +34,18 @@ def main():
 
     # Apply each provided svg to all matching targets.
     modified_bundles = set()
+    replaced = 0
     for sroot, sdirs, sfiles in os.walk(svg_dir):
         sdirs[:] = [d for d in sdirs if d != "__MACOSX"]
         for f in sfiles:
             if f.startswith("._") or not f.lower().endswith(".svg"):
                 continue
-            for path, broot in index.get(f, []):
+            targets = index.get(f, [])
+            for path, broot in targets:
                 shutil.copyfile(os.path.join(sroot, f), path)
                 modified_bundles.add(broot)
+            if targets:
+                replaced += 1
 
     # A resource bundle's own _CodeSignature seals its files by hash; once we
     # replace glyphs that seal is stale. Drop it so the containing app/appex
@@ -59,6 +54,7 @@ def main():
     for broot in sorted(modified_bundles):
         shutil.rmtree(os.path.join(broot, "_CodeSignature"), ignore_errors=True)
 
+    print("glyphs-replaced: %d" % replaced)
     return 0
 
 

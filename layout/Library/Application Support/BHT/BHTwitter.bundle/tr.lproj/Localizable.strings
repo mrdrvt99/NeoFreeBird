@@ -12,6 +12,11 @@
 
 "YES_ACTION_LABEL" = "Evet";
 "NO_ACTION_LABEL" = "Hayır";
+"CANCEL_ACTION_LABEL" = "Vazgeç";
+"CONTINUE_ACTION_LABEL" = "Devam et";
+"DONE" = "Bitti";
+"SAVE" = "Kaydet";
+"SAVE_ACTION_LABEL" = "Kaydet";
 
 /*Settings*/
 "MODERN_SETTINGS_LAYOUT_TITLE" = "Genel";
@@ -78,6 +83,7 @@
 "ALWAYS_OPEN_SAFARI_DETAIL" = "Linkleri Safari veya varsayılan tarayıcıda aç.";
 
 "SHARING_DOMAIN_TITLE" = "Paylaşım alan adı";
+"SHARING_DOMAIN_DETAIL" = "Paylaşılan Tweet bağlantılarında kullanılan alan adını özelleştirin.";
 
 /*Tweets*/
 "TWEET_TO_IMAGE_TITLE" = "Tweet’i görsel olarak kaydet";
@@ -167,6 +173,9 @@
 
 "SHOW_UNROUNDED_COUNTS_TITLE" = "Tam sayıları göster";
 "SHOW_UNROUNDED_COUNTS_DETAIL" = "Takipçi, takip ve tweet sayılarını yuvarlamak yerine tam sayı olarak gösterir.";
+
+"FAST_BLOCK_TITLE" = "Hızlı engelleme";
+"FAST_BLOCK_DETAIL" = "Profillerde hızlıca engelleme seçeneği sunar.";
 
 /*Search*/
 "NO_HISTORY_TITLE" = "Arama geçmişi yok";
@@ -284,6 +293,7 @@
 "THEME_SETTINGS_NAVIGATION_DETAIL" = "Yalnızca sizin göreceğiniz bir tema rengi seçin.";
 
 /*Tab bar*/
+"TAB_CUSTOMIZATION_TITLE" = "Sekmeleri düzenle";
 "CUSTOM_TAB_BAR_SETTINGS_NAVIGATION_TITLE" = "Sekmeleri düzenle";
 "CUSTOM_TAB_BAR_GRID_DETAIL" = "Eklemek veya kaldırmak için bir öğeye dokunun. Yeniden sıralamak için aşağıdaki çubuğu sürükleyin.";
 "CUSTOM_TAB_BAR_RESET_MESSAGE" = "Geçerli gezinme çubuğunu varsayılanlara döndürmek istediğinizden emin misiniz?";
@@ -314,6 +324,9 @@
 
 "HIDE_VERIFIED_TWEETS_TITLE" = "Onaylı Tweetleri gizle";
 "HIDE_VERIFIED_TWEETS_DETAIL" = "Zaman akışınızda ve yanıtlarınızda onaylı hesapların Tweetlerini gizler (Yazar aynı ileti dizisinde yanıt vermediyse veya hesabı takip etmiyorsanız).";
+
+"HIDE_BLOCKED_RETWEETS_TITLE" = "Engellenen Retweetleri gizle";
+"HIDE_BLOCKED_RETWEETS_DETAIL" = "Engellediğiniz kişilerin başkaları tarafından yapılan Retweetlerini zaman akışınızda gizler.";
 
 "HIDE_TWEET_BUTTON_TITLE" = "Tweet at butonunu gizle";
 "HIDE_TWEET_BUTTON_DETAIL" = "Gezinme çubuğundan Tweet at butonunu kaldırır.";
@@ -382,3 +395,7 @@
 "20 seconds" = "20 saniye";
 "30 seconds" = "30 saniye";
 "60 seconds" = "60 saniye";
+
+/* Undo Duration Labels (Added for TweetsSettingsViewController) */
+"GENERIC_OFF_LABEL" = "Kapalı";
+"SUBSCRIPTION_UNDO_SEND_DURATION_LABEL" = "%ld saniye";

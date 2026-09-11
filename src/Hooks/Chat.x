@@ -16,6 +16,10 @@
 #import "HookHelpers.h"
 #import <string.h>
 
+// Forward declaration for the Swift controller causing the compiler error
+@interface _TtC14DMConversation29SecureContainerViewController : UIViewController
+@end
+
 // MARK: - Matching
 
 static BOOL isChatWebSocketURL(NSURL* url) {
@@ -132,15 +136,8 @@ static void nfb_applyChatScreenTint(UIView* view) {
         %orig;
         return;
     }
-    struct objc_super superInfo = {
-        .receiver = self,
-        .super_class = class_getSuperclass([self class])
-    };
-
-    ((void (*)(struct objc_super *, SEL))objc_msgSendSuper)(
-        &superInfo,
-        @selector(loadView)
-    );
+    
+    %orig;
 }
 
 %end

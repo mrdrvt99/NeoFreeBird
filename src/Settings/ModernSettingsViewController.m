@@ -286,6 +286,12 @@
             @"userID": @"1541742676009226241"
         },
         @{
+            @"title": @"OrionBlur",
+            @"username": @"orionblur",
+            @"avatarURL": @"https://unavatar.io/x/orionblur",
+            @"userID": @"2023606533255540736"
+        },
+        @{
             @"title": @"timi2506",
             @"username": @"timi2506",
             @"avatarURL": @"https://unavatar.io/github/timi2506?fallback=https://neofreebird.com/images/"
@@ -339,12 +345,6 @@
             @"username": @"gingerbeardman",
             @"avatarURL": @"https://unavatar.io/x/gingerbeardman",
             @"userID": @"40743"
-        },
-        @{
-            @"title": @"OrionBlur",
-            @"username": @"orionblur",
-            @"avatarURL": @"https://unavatar.io/x/orionblur",
-            @"userID": @"2023606533255540736"
         }
     ];
 
@@ -469,7 +469,7 @@
 }
 - (void)footerLabelLongPressed:(UILongPressGestureRecognizer *)sender {
     if (sender.state == UIGestureRecognizerStateBegan) {
-        NSURL *url = [NSURL URLWithString:@"https://www.youtube.com/watch?v=NucG0kD3pkg"];
+        NSURL *url = [NSURL URLWithString:@"https://www.youtube.com/watch?v=uFUSim9dvQw"];
         if ([[UIApplication sharedApplication] canOpenURL:url]) {
             [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
         }

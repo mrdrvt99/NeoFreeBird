@@ -5,6 +5,7 @@
 
 #import "HookHelpers.h"
 #import "Headers/UIHeaders.h"
+#import "Headers/TFNHeaders.h"
 #import <math.h>
 
 // MARK: - Custom accent color
@@ -249,6 +250,15 @@ static UIColor* BHTDimNormalizedViewBackground(UIView* view, UIColor* color) {
 
 %end
 
+void BHTApplyDimToVideoControls(UIView* controlsView) {
+    if (!BHTDimThemeEnabled() || !controlsView ||
+        controlsView.traitCollection.userInterfaceStyle != UIUserInterfaceStyleDark) {
+        return;
+    }
+
+    controlsView.superview.backgroundColor = BHTDimElevatedBackgroundColor();
+}
+
 // X 12.9's Explore search pill is a background image owned by UISearchBar's
 // private _UITextFieldImageBackgroundView. It never asks TAEColorPalette for
 // pillDefaultBackgroundColor, so recolor it through UISearchBar's public image
@@ -332,10 +342,33 @@ static BOOL BHTIsExploreSearchBackgroundView(UIView* view) {
 
 %end
 
-%hook _TtC10TFNUISwift25SegmentedHighlightBarView
+
+%hook _TtC10TFNUISwift26LegacySegmentedTabBarStyle
+
+- (void)setHighlightBarColor:(UIColor*)color {
+    if (color && [BHTSettings boolForKey:@"tab_bar_theming"]) {
+        %orig(CurrentAccentColor());
+        return;
+    }
+    %orig(color);
+}
+
+%end
+
+%hook _TtC10TFNUISwift25LegacySegmentedTabBarView
+
+- (void)setStyle:(_TtC10TFNUISwift26LegacySegmentedTabBarStyle*)style {
+    if (style && [BHTSettings boolForKey:@"tab_bar_theming"]) {
+        style.highlightBarColor = CurrentAccentColor();
+    }
+    %orig(style);
+}
+
+%end
+
+%hook _TtC10TFNUISwift31LegacySegmentedHighlightBarView
 
 - (void)setBackgroundColor:(UIColor*)color {
-    // A nil assignment is the bar hiding its caret -- leave that alone.
     if (color && [BHTSettings boolForKey:@"tab_bar_theming"]) {
         %orig(CurrentAccentColor());
         return;
@@ -504,10 +537,52 @@ static UIColor* tabItemColor(BOOL selected) {
         if (logoView.image) {
             logoView.image = [logoView.image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
             logoView.tintColor = CurrentAccentColor();
+            BHTMarkAccentTintedIcon(logoView, YES);
         }
     }
 
     return titleView;
+}
+
+%end
+
+// MARK: - iPad sidebar logo theming
+
+static void ApplySidebarIconTheme(UIViewController* sidebar) {
+    Ivar iconViewIvar =
+        class_getInstanceVariable(%c(T1AppSplitSideBarViewController), "_iconView");
+    if (!iconViewIvar) {
+        return;
+    }
+
+    UIImageView* iconView = object_getIvar(sidebar, iconViewIvar);
+    if (![iconView isKindOfClass:[UIImageView class]] || !iconView.image) {
+        return;
+    }
+
+    BOOL wantsAccent = [BHTSettings boolForKey:@"color_twitter_icon_in_top_bar"];
+    UIImageRenderingMode mode = wantsAccent ? UIImageRenderingModeAlwaysTemplate
+                                            : UIImageRenderingModeAlwaysOriginal;
+
+    if (iconView.image.renderingMode != mode) {
+        iconView.image = [iconView.image imageWithRenderingMode:mode];
+    }
+    if (wantsAccent) {
+        iconView.tintColor = CurrentAccentColor();
+    }
+    BHTMarkAccentTintedIcon(iconView, wantsAccent);
+}
+
+%hook T1AppSplitSideBarViewController
+
+- (void)viewDidLoad {
+    %orig;
+    ApplySidebarIconTheme(self);
+}
+
+- (void)viewWillLayoutSubviews {
+    %orig;
+    ApplySidebarIconTheme(self);
 }
 
 %end

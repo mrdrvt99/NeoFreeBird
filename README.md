@@ -153,7 +153,7 @@ Result: `com.bandarhl.bhtwitter_4.2_iphoneos-arm.deb` inside `packages`.
 
 `rebrand.sh` applies name and icon branding to an IPA. This can be done before or after patching with the tweak.
 
-Resource packs work on both macOS and Linux via [scar](https://github.com/theacrat/scar), which is downloaded automatically if it isn't in `PATH` (or set `NFB_SCAR` to a binary). The Pillow package they need is installed automatically into a cached venv on first use. There is a GitHub Actions workflow if you'd rather not run it locally.
+Resource packs work on both macOS and Linux via [scar](https://github.com/theacrat/scar), which rebuilds the app's asset catalogs, and [resvg](https://github.com/linebender/resvg), which rasterizes a pack's `svgs/` glyphs into them. Both are downloaded automatically if they aren't in `PATH` (or set `NFB_SCAR` / `NFB_RESVG` to a binary). The Pillow package they need is installed automatically into a cached venv on first use. There is a GitHub Actions workflow if you'd rather not run it locally.
 
 
 ```bash

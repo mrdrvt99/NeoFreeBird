@@ -67,7 +67,7 @@
             [appIconVC.navigationItem
                 setTitleView:[objc_getClass("TFNTitleView")
                                  titleViewWithTitle:[[BHTBundle sharedBundle]
-                                                        localizedTwitterStringForKey:
+                                                        localizedStringForKey:
                                                             @"SUBSCRIPTION_APP_ICON_SETTINGS_TITLE"]
                                            subtitle:self.account.displayUsername]];
         }

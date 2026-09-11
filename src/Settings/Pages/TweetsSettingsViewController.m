@@ -34,10 +34,10 @@
 // A timeout of 0 reads as "Off"; any positive value shows its seconds.
 - (NSString*)labelForTimeout:(NSInteger)seconds {
     if (seconds <= 0) {
-        return [[BHTBundle sharedBundle] localizedTwitterStringForKey:@"GENERIC_OFF_LABEL"];
+        return [[BHTBundle sharedBundle] localizedStringForKey:@"GENERIC_OFF_LABEL"];
     }
     NSString* format = [[BHTBundle sharedBundle]
-        localizedTwitterStringForKey:@"SUBSCRIPTION_UNDO_SEND_DURATION_LABEL"];
+        localizedStringForKey:@"SUBSCRIPTION_UNDO_SEND_DURATION_LABEL"];
     return [NSString stringWithFormat:format, (long)seconds];
 }
 
@@ -65,7 +65,7 @@
 
     [alert addAction:[UIAlertAction
                          actionWithTitle:[[BHTBundle sharedBundle]
-                                             localizedTwitterStringForKey:@"CANCEL_ACTION_LABEL"]
+                                             localizedStringForKey:@"CANCEL_ACTION_LABEL"]
                                    style:UIAlertActionStyleCancel
                                  handler:nil]];
 

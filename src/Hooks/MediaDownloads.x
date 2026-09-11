@@ -4,15 +4,54 @@
 //
 
 #import "HookHelpers.h"
+#import <objc/runtime.h>
 
-// MARK: - DM voice message download
 static NSURL* nfbLastCapturedVoiceURL = nil;
+
+static BOOL IsVoiceMediaURL(NSURL* url) {
+    if (url == nil) {
+        return NO;
+    }
+    if ([url.path containsString:@"/decrypted-media-v2/"]) {
+        return YES;
+    }
+    static NSSet* audioExtensions = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        audioExtensions = [NSSet setWithArray:@[@"m4a", @"aac", @"caf", @"wav", @"mp3"]];
+    });
+    return [audioExtensions containsObject:url.pathExtension.lowercaseString];
+}
+
+static void CaptureVoiceURL(NSURL* url, NSString* source) {
+    if (![BHTSettings boolForKey:@"download_voice_messages"]) {
+        return;
+    }
+    BOOL kept = IsVoiceMediaURL(url);
+    NSLog(@"[NFB] voice capture (%@) %@: %@", source, kept ? @"kept" : @"ignored", url);
+    if (kept) {
+        nfbLastCapturedVoiceURL = url;
+    }
+}
 
 %hook AVURLAsset
 - (id)initWithURL:(NSURL*)url options:(NSDictionary*)options {
-    if ([url.path containsString:@"/decrypted-media-v2/"]) {
-        nfbLastCapturedVoiceURL = url;
-    }
+    CaptureVoiceURL(url, @"AVURLAsset");
+    return %orig;
+}
+%end
+
+// AVAudioPlayer is covered as well as AVURLAsset because the Chat stack no
+// longer has to build an AVPlayer to play a short local note.
+%hook AVAudioPlayer
+- (id)initWithContentsOfURL:(NSURL*)url error:(NSError**)outError {
+    CaptureVoiceURL(url, @"AVAudioPlayer");
+    return %orig;
+}
+- (id)initWithContentsOfURL:(NSURL*)url
+               fileTypeHint:(NSString*)utiString
+                      error:(NSError**)outError {
+    CaptureVoiceURL(url, @"AVAudioPlayer/fileTypeHint");
     return %orig;
 }
 %end
@@ -128,55 +167,84 @@ static NSArray* DMVideoEntities(UIView* attachmentView) {
 }
 %end
 
-// MARK: - DM voice message download (context menu)
+
+// MARK: - Chat voice bubble
 //
-// Lives directly on the audio view -- see the note at the top of this file
-// for why this can't share MessageAttachmentView's interaction. Same
-// UIContextMenuInteraction pattern as the video/gif download above: its
-// fixed ~0.5s trigger duration wins the race against the stock DM context
-// menu (React/Reply/Copy/etc) essentially every time a long-press lands on
-// the audio view specifically, replacing it with just Download rather than
-// merging the two. That's an accepted tradeoff, matching how the video/gif
-// download above already behaves for images/videos -- confirmed on-device
-// that a longer-duration separate UILongPressGestureRecognizer (see the
-// commented-out block below) doesn't help: the native menu's own preview
-// animation takes over the touch before the longer threshold is ever
-// reached, so it never fires at all.
-%hook _TtC13DMAttachments24AttachmentAssetAudioView
-%property (nonatomic, strong) UIContextMenuInteraction* voiceDownloadInteraction;
+// The audio view sits inside MessageAttachmentView but carries its own gesture
+// rather than sharing the video download menu above, so that a long press on a
+// voice note wins over the stock chat context menu.
+
+static const void* kVoiceDownloadLongPressKey = &kVoiceDownloadLongPressKey;
+
+static UILongPressGestureRecognizer* VoiceDownloadLongPressRecognizer(UIView* view) {
+    return objc_getAssociatedObject(view, kVoiceDownloadLongPressKey);
+}
+
+static void SetVoiceDownloadLongPressRecognizer(UIView* view,
+                                                UILongPressGestureRecognizer* recognizer) {
+    objc_setAssociatedObject(view, kVoiceDownloadLongPressKey, recognizer,
+                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+}
+
+%hook _TtC16ChatConversation26MessageAttachmentAudioView
+
 - (void)layoutSubviews {
     %orig;
 
-    if ([BHTSettings boolForKey:@"download_voice_messages"] && self.voiceDownloadInteraction == nil) {
-        self.voiceDownloadInteraction = [[UIContextMenuInteraction alloc] initWithDelegate:self];
-        [self addInteraction:self.voiceDownloadInteraction];
-    }
-}
-%new
-- (UIContextMenuConfiguration*)contextMenuInteraction:(UIContextMenuInteraction*)interaction
-                       configurationForMenuAtLocation:(CGPoint)location {
-    NSURL* voiceURL = nfbLastCapturedVoiceURL;
-    if (!voiceURL) {
-        return nil;
+    if (![BHTSettings boolForKey:@"download_voice_messages"] ||
+        VoiceDownloadLongPressRecognizer(self) != nil) {
+        return;
     }
 
-    return [UIContextMenuConfiguration
-        configurationWithIdentifier:nil
-                    previewProvider:nil
-                     actionProvider:^UIMenu* _Nullable(
-                         NSArray<UIMenuElement*>* _Nonnull suggestedActions) {
-                         UIAction* saveAction = [UIAction
-                             actionWithTitle:
-                                 [[BHTBundle sharedBundle]
-                                     localizedTwitterStringForKey:@"DOWNLOAD_ACTIVITY_VIEW_LABEL"]
-                                       image:[UIImage systemImageNamed:@"square.and.arrow.down"]
-                                  identifier:nil
-                                     handler:^(__kindof UIAction* _Nonnull action) {
-                                         DownloadVoiceMessage(voiceURL);
-                                     }];
-                         return [UIMenu menuWithTitle:@"" children:@[saveAction]];
-                     }];
+    UILongPressGestureRecognizer* longPress = [[UILongPressGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(nfb_handleVoiceDownloadLongPress:)];
+    longPress.minimumPressDuration = 0.5;
+    longPress.numberOfTouchesRequired = 2;
+    longPress.cancelsTouchesInView = NO;
+
+    [self addGestureRecognizer:longPress];
+    SetVoiceDownloadLongPressRecognizer(self, longPress);
 }
+
+// The view overrides -gestureRecognizerShouldBegin: for its own waveform pan
+// gesture, and UIKit routes that override through for *every* recognizer
+// attached to the view -- ours included. Without this passthrough the long
+// press installs cleanly and then never begins.
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer {
+    if (gestureRecognizer == VoiceDownloadLongPressRecognizer(self)) {
+        return YES;
+    }
+    return %orig;
+}
+
+%new
+- (void)nfb_handleVoiceDownloadLongPress:(UILongPressGestureRecognizer*)recognizer {
+    if (recognizer.state != UIGestureRecognizerStateBegan) {
+        return;
+    }
+
+    NSURL* voiceURL = nfbLastCapturedVoiceURL;
+    if (voiceURL == nil) {
+        return;
+    }
+
+    TFNActionItem* downloadItem = [objc_getClass("TFNActionItem")
+        actionItemWithTitle:[[BHTBundle sharedBundle]
+                                localizedStringForKey:@"DOWNLOAD_ACTIVITY_VIEW_LABEL"]
+                  imageName:@"arrow_down_circle_stroke"
+                     action:^{
+                         DownloadVoiceMessage(voiceURL);
+                     }];
+
+    TFNMenuSheetViewController* sheet = [[objc_getClass("TFNMenuSheetViewController") alloc]
+        initWithActionItems:@[downloadItem]];
+
+    [sheet tfnPresentedCustomPresentFromViewController:topMostController()
+                                              animated:YES
+                                            completion:nil];
+}
+
 %end
 
 // MARK: - Upload custom voice

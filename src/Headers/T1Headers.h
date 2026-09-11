@@ -226,16 +226,8 @@
 @property (nonatomic, readonly) NSArray* inlineMediaInfos;
 @end
 
-// DM voice message view (DMAttachments.AttachmentAssetAudioView). Not nested
-// inside MessageAttachmentView (confirmed on-device), so it gets its own
-// download context menu interaction rather than sharing that one -- see
-// MediaDownloads.x for how the playable URL is captured and why this wins
-// over the stock DM context menu on long-press.
-@interface _TtC13DMAttachments24AttachmentAssetAudioView : UIView
-@property (nonatomic, strong) UIContextMenuInteraction* voiceDownloadInteraction;
-@end
 
-@interface _TtC13DMAttachments24AttachmentAssetAudioView () <UIContextMenuInteractionDelegate>
+@interface _TtC16ChatConversation26MessageAttachmentAudioView : UIView
 @end
 
 #pragma mark - Host & web views
@@ -351,10 +343,8 @@
 - (void)setPausedByUser:(BOOL)paused;
 @end
 
-@interface _TtC4DMUI23ContainerViewController: UIViewController
-- (void)loadView;
+@interface _TtC16ChatConversation24ScreenshotProtectionView: UIView
 @end
 
-@interface _TtC14DMConversation29SecureContainerViewController: _TtC4DMUI23ContainerViewController
-- (void)loadView;
+@interface T1AppSplitSideBarViewController : UIViewController
 @end

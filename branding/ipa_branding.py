@@ -18,12 +18,14 @@ resolved relative to this file rather than the caller.
 
 import os
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
 import tarfile
 import tempfile
 import urllib.request
+import zipfile
 from pathlib import Path
 
 BRANDING_DIR = Path(__file__).resolve().parent
@@ -32,6 +34,11 @@ BRANDING_DIR = Path(__file__).resolve().parent
 # locally (https://github.com/theacrat/scar).
 SCAR_VERSION = "v0.1.0"
 SCAR_URL = "https://github.com/theacrat/scar/releases/download/{v}/scar-{v}-{triple}.tar.gz"
+
+# Pinned resvg release, used to rasterize a pack's glyphs into the bitmap
+# renditions that back a catalog's vector glyphs (https://github.com/linebender/resvg).
+RESVG_VERSION = "v0.48.1"
+RESVG_URL = "https://github.com/linebender/resvg/releases/download/{v}/resvg-{asset}"
 
 def err(message):
     print(f"Error: {message}", file=sys.stderr)
@@ -48,6 +55,24 @@ def _have(cmd):
 def _run(args, **kwargs):
     """Run a command, returning True on success (exit 0)."""
     return subprocess.run(args, **kwargs).returncode == 0
+
+
+def _run_counting(args, **kwargs):
+    """Run a helper that ends its output with "glyphs-replaced: N".
+
+    Returns the count, or None if the helper failed. Its output is echoed so
+    progress and warnings still reach the console.
+    """
+    marker = "glyphs-replaced:"
+    res = subprocess.run(args, capture_output=True, text=True, **kwargs)
+    count = None
+    for line in res.stdout.splitlines():
+        if line.startswith(marker):
+            count = int(line.split(":", 1)[1])
+        else:
+            print(line)
+    sys.stderr.write(res.stderr)
+    return None if res.returncode != 0 else count
 
 
 def _find(root, predicate):
@@ -170,13 +195,9 @@ def _apply_resource_pack_to_app(appdir, workdir, zip_path):
             str(appdir), str(catalog),
         ])
 
-    # --- svgs/: override TwitterAppearance vector glyphs ---
+    # --- svgs/: override the app's vector glyphs ---
     if have_svgs:
-        if not _run([
-            sys.executable, str(BRANDING_DIR / "override_appearance_svgs.py"),
-            str(appdir), str(svgs_dir),
-        ]):
-            raise BrandingError("Branding: failed to override TwitterAppearance glyphs")
+        _apply_glyphs_to_app(appdir, workdir, svgs_dir)
 
     # --- root files (e.g. LaunchScreen.nib): overwrite the same file in app root ---
     if have_root:
@@ -190,6 +211,80 @@ def _apply_resource_pack_to_app(appdir, workdir, zip_path):
                 shutil.copyfile(rf, dest)
             else:
                 err(f"Branding: '{rf.name}' is not present in the app root; skipped.")
+
+
+# Rendition names in a compiled catalog keep the glyph's original file name, so
+# a cheap scan of the raw .car tells us which catalogs are worth decompiling.
+_CAR_SVG_NAME = re.compile(rb"[A-Za-z0-9_.@%+\-]{1,120}\.svg")
+
+
+def _glyph_catalogs(appdir, svgs_dir):
+    """Asset catalogs under appdir holding vector glyphs the pack replaces."""
+    wanted = {p.stem for p in Path(svgs_dir).rglob("*.svg") if not _is_apple_double(p)}
+    hits = []
+    for car in sorted(Path(appdir).rglob("Assets.car")):
+        names = {m[:-4].decode("ascii", "replace")
+                 for m in _CAR_SVG_NAME.findall(car.read_bytes())}
+        if names & wanted:
+            hits.append(car)
+    return hits
+
+
+def _apply_glyphs_to_app(appdir, workdir, svgs_dir):
+    """Replace the app's UI glyphs with the pack's, wherever they live.
+
+    Builds up to ~2023 kept them as loose files under
+    TwitterAppearance_TwitterAppearance.bundle/VectorImages/main; newer ones
+    compile them into asset catalogs (XIcons_XIconsAssets.bundle, plus a small
+    private copy in some appexes). Both are attempted, and it is a failure only
+    if neither replaced anything -- otherwise a layout change silently leaves
+    the in-app icons untouched, which is exactly how this broke before.
+    """
+    replaced = _run_counting([
+        sys.executable, str(BRANDING_DIR / "override_appearance_svgs.py"),
+        str(appdir), str(svgs_dir),
+    ])
+    if replaced is None:
+        raise BrandingError("Branding: failed to override TwitterAppearance glyphs")
+    if replaced:
+        print("glyphs: %d loose TwitterAppearance glyph(s) replaced" % replaced)
+
+    catalogs = _glyph_catalogs(appdir, svgs_dir)
+    if catalogs:
+        scar = _ensure_scar(workdir)
+        resvg = _ensure_resvg(workdir)
+        python = _python_with_pillow()
+        for index, car in enumerate(catalogs):
+            # Each catalog gets its own scratch dir, since scar decompiles into
+            # <workdir>/catalog and the icons step already claimed that one.
+            sub = workdir / ("glyphs%d" % index)
+            sub.mkdir(parents=True, exist_ok=True)
+            new_car = sub / "new.car"
+            where = car.relative_to(appdir.parent)
+            count = _run_counting([
+                str(python), str(BRANDING_DIR / "svg_merge.py"),
+                str(car), str(svgs_dir), str(new_car),
+                "--workdir", str(sub), "--scar", str(scar), "--resvg", str(resvg),
+            ])
+            if count is None:
+                raise BrandingError("Branding: failed to rebuild %s" % where)
+            if not count:
+                continue
+            shutil.copyfile(new_car, car)
+            replaced += count
+            print("glyphs: %d glyph(s) replaced in %s" % (count, where))
+            # A resource bundle's own _CodeSignature seals its files by hash; the
+            # rebuilt catalog makes that seal stale, so drop it and let the parent
+            # app/appex re-seal be authoritative (same as the loose-glyph path).
+            if car.parent.suffix == ".bundle":
+                shutil.rmtree(car.parent / "_CodeSignature", ignore_errors=True)
+
+    if not replaced:
+        raise BrandingError(
+            "Branding: none of the pack's svgs/ glyphs matched anything in this "
+            "app (no loose TwitterAppearance glyphs and no matching asset "
+            "catalog); the pack may be for a different app version"
+        )
 
 
 def _python_with_pillow():
@@ -258,6 +353,54 @@ def _ensure_scar(workdir):
     scar = workdir / "scar"
     scar.chmod(0o755)
     return scar
+
+
+def _resvg_asset():
+    """resvg's release asset for this platform, or None if it ships none."""
+    machine = os.uname().machine.lower()
+    if sys.platform == "darwin":
+        if machine == "arm64":
+            return "macos-aarch64.zip"
+        if machine == "x86_64":
+            return "macos-x86_64.zip"
+    elif sys.platform.startswith("linux") and machine in ("x86_64", "amd64"):
+        return "linux-x86_64.tar.gz"
+    return None
+
+
+def _ensure_resvg(workdir):
+    """Locate the resvg binary: $NFB_RESVG, then PATH, then download the pinned
+    release build for this platform."""
+    env = os.environ.get("NFB_RESVG")
+    if env:
+        if Path(env).is_file():
+            return Path(env)
+        raise BrandingError(f"Branding: NFB_RESVG points to a missing file: {env}")
+    found = shutil.which("resvg")
+    if found:
+        return Path(found)
+
+    asset = _resvg_asset()
+    if not asset:
+        raise BrandingError(
+            "Branding: no resvg release build for this platform; install resvg "
+            "(https://github.com/linebender/resvg) and put it in PATH or NFB_RESVG"
+        )
+    url = RESVG_URL.format(v=RESVG_VERSION, asset=asset)
+    archive = workdir / ("resvg-" + asset)
+    try:
+        urllib.request.urlretrieve(url, archive)
+        if asset.endswith(".zip"):
+            with zipfile.ZipFile(archive) as zf:
+                zf.extract("resvg", workdir)
+        else:
+            with tarfile.open(archive) as tf:
+                tf.extract("resvg", workdir)
+    except (OSError, KeyError, tarfile.TarError, zipfile.BadZipFile) as exc:
+        raise BrandingError(f"Branding: failed to download resvg from {url}: {exc}")
+    resvg = workdir / "resvg"
+    resvg.chmod(0o755)
+    return resvg
 
 
 # --- entry point ------------------------------------------------------------

@@ -15,16 +15,18 @@ static void ShowConfirmation(void (^confirmed)(void)) {
         makeAlert:^(FLEXAlert* make) {
             make.message([[BHTBundle sharedBundle]
                 localizedStringForKey:@"CONFIRM_ALERT_MESSAGE"]);
+
             make.button([[BHTBundle sharedBundle]
-                            localizedTwitterStringForKey:@"YES_ACTION_LABEL"])
+                localizedStringForKey:@"YES_ACTION_LABEL"])
                 .handler(^(NSArray<NSString*>* strings) {
                     confirmed();
                 });
+
             make.button([[BHTBundle sharedBundle]
-                            localizedTwitterStringForKey:@"NO_ACTION_LABEL"])
+                localizedStringForKey:@"NO_ACTION_LABEL"])
                 .cancelStyle();
         }
-         showFrom:topMostController()];
+        showFrom:topMostController()];
 }
 
 // MARK: - Tweet confirm
