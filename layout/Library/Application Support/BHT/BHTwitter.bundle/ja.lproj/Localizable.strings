@@ -74,8 +74,8 @@
 "HIDE_TIMELINE_PROMPTS_TITLE" = "タイムラインの案内を非表示";
 "HIDE_TIMELINE_PROMPTS_DETAIL" = "「連絡先を追加」などの案内バナーを非表示にします。";
 
-"HIDE_BLOCKED_RETWEETS_TITLE" = "ブロックしたユーザーのリツイートを非表示";
-"HIDE_BLOCKED_RETWEETS_DETAIL" = "あなたをブロックしているアカウントのリツイートを非表示にします。";
+"HIDE_BLOCKED_RETWEETS_TITLE" = "ブロック済ユーザーのリポスト非表示";
+"HIDE_BLOCKED_RETWEETS_DETAIL" = "あなたをブロックしているアカウントのリポストを非表示にします。";
 
 "PADLOCK_TITLE" = "Xをロック";
 "PADLOCK_DETAIL" = "Xを開く際にFace IDまたはパスコードによる認証を必要とします。";
@@ -118,7 +118,7 @@
 "HIDE_DOWNVOTE_BUTTON_TITLE" = "低評価ボタンを非表示";
 "HIDE_DOWNVOTE_BUTTON_DETAIL" = "ポストに表示される低評価ボタンを非表示にします。";
 
-"DISABLE_SENSITIVE_TWEET_WARNINGS_TITLE" = "センシティブコンテンツの警告を非表示";
+"DISABLE_SENSITIVE_TWEET_WARNINGS_TITLE" = "センシティブ警告を非表示";
 
 "BYPASS_AGE_VERIFICATION_TITLE" = "年齢確認をスキップ";
 "BYPASS_AGE_VERIFICATION_DETAIL" = "センシティブなコンテンツを表示する際の年齢確認をスキップします。";
@@ -201,7 +201,7 @@
 "TAP_TO_PAUSE_TITLE" = "タップして動画を一時停止";
 "TAP_TO_PAUSE_DETAIL" = "一時停止ボタンを使う代わりに、動画を2本指でタップすると一時停止できます。";
 
-"DISABLE_IMMERSIVE_SCROLL_TITLE" = "動画フィードのスクロールを無効にする";
+"DISABLE_IMMERSIVE_SCROLL_TITLE" = "動画フィードのスクロール無効";
 
 "DISABLE_VIDEO_DOCKING_TITLE" = "動画のドッキングを無効にする";
 "DISABLE_VIDEO_DOCKING_DETAIL" = "動画をドラッグして画面外へ移動した際に、ピクチャ・イン・ピクチャボタンが表示されないようにします。";

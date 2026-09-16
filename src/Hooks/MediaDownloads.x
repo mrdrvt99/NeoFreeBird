@@ -79,7 +79,7 @@ static void DownloadVoiceMessage(NSURL* sourceURL) {
 
     TFNHUD* hud = [[objc_getClass("TFNHUD") alloc]
         initWithText:[[BHTBundle sharedBundle]
-                          localizedTwitterStringForKey:@"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING"]];
+                          localizedStringForKey:@"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING"]];
     [hud show];
     NSURLSessionDownloadTask* task = [[NSURLSession sharedSession]
         downloadTaskWithURL:sourceURL

@@ -17,6 +17,7 @@
 "DONE" = "Done";
 "SAVE" = "Save";
 "SAVE_ACTION_LABEL" = "Save";
+"OK_ACTION_LABEL" = "OK";
 
 
 /*Settings*/
@@ -71,6 +72,9 @@
 "HIDE_WHO_TO_FOLLOW_TITLE" = "No 'Who to follow'";
 "HIDE_WHO_TO_FOLLOW_DETAIL" = "Remove follow suggestions.";
 
+"NO_FOCUS_LOST_TITLE" = "No focus lost";
+"NO_FOCUS_LOST_DETAIL" = "Blocks Twitter from detecting when you've switched to another app, so you won't lose your place in a thread.";
+
 "HIDE_TIMELINE_PROMPTS_TITLE" = "No timeline prompts";
 "HIDE_TIMELINE_PROMPTS_DETAIL" = "Remove banners like 'Add contacts'.";
 
@@ -94,6 +98,9 @@
 
 "LIKE_CONFIRM_TITLE" = "Confirm likes";
 "LIKE_CONFIRM_DETAIL" = "Ask before liking a Tweet.";
+
+"USE_TENOR_GIFS_TITLE" = "Use Tenor GIFs";
+"USE_TENOR_GIFS_DETAIL" = "Use Tenor GIFs instead of Twitter's GIFs (GIPHY). Tenor has more options.";
 
 "TWEET_CONFIRM_TITLE" = "Confirm Tweets";
 "TWEET_CONFIRM_DETAIL" = "Ask before you post a Tweet.";
@@ -214,6 +221,9 @@
 
 "DOWNLOAD_VIDEOS_TITLE" = "Download media";
 "DOWNLOAD_VIDEOS_DETAIL" = "Save videos or GIFs right from the Tweet overflow menu.";
+
+"DOWNLOAD_HIGHEST_QUALITY_TITLE" = "Always download highest quality";
+"DOWNLOAD_HIGHEST_QUALITY_DETAIL" = "Skip the quality picker and save the best MP4 straight away.";
 
 "UPLOAD_FULL_HD_VIDEOS_TITLE" = "Upload full HD videos";
 "UPLOAD_FULL_HD_VIDEOS_DETAIL" = "Unlock the ability to upload videos in 1080p.";
@@ -363,6 +373,10 @@
 "LEGACY_LOGIN_VERIFYING_STATUS" = "Verifying…";
 "LEGACY_LOGIN_SIGNING_IN_STATUS" = "Signing in…";
 "LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Unavailable";
+"PHONE_OR_EMAIL_OR_USERNAME_LABEL" = "Phone, email, or username";
+"PASSWORD_LABEL" = "Password";
+"LOG_IN_ACTION_LABEL" = "Log in";
+"LOG_IN_TITLE" = "Log in";
 "LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Login classes missing.";
 "LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "Could not build command.";
 "LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Crash avoided";
@@ -390,6 +404,26 @@
 
 "SUBSCRIPTION_UNDO_SEND_DURATION_TITLE" = "Undo Duration";
 "SUBSCRIPTION_UNDO_SEND_DURATION_DETAIL" = "Choose how long the undo button will remain after sending a tweet.";
+
+/* Presets — settings import and export */
+"SETTINGS_EXPORT_TITLE" = "Export settings";
+"SETTINGS_IMPORT_TITLE" = "Import settings";
+
+"SETTINGS_EXPORT_FAILED_TITLE" = "Export failed";
+"SETTINGS_EXPORT_WRITE_FAILED" = "The settings file couldn't be created.";
+
+"SETTINGS_IMPORT_CONFIRM_TITLE" = "Import settings?";
+"SETTINGS_IMPORT_CONFIRM_MESSAGE" = "Your current NeoFreeBird settings will be replaced by the ones in the file you choose.";
+"SETTINGS_IMPORT_CONFIRM_BUTTON" = "Choose file";
+"SETTINGS_IMPORT_FAILED_TITLE" = "Import failed";
+"SETTINGS_IMPORT_SUCCESS_TITLE" = "Settings imported";
+"SETTINGS_IMPORT_SUCCESS_MESSAGE" = "%ld settings were applied. Restart the app for all of them to take effect.";
+"SETTINGS_IMPORT_RESTART_BUTTON" = "Restart";
+"SETTINGS_IMPORT_LATER_BUTTON" = "Later";
+
+"SETTINGS_TRANSFER_UNREADABLE_FILE" = "That file couldn't be read.";
+"SETTINGS_TRANSFER_MALFORMED_FILE" = "That file isn't a NeoFreeBird settings export.";
+"SETTINGS_TRANSFER_NO_SETTINGS" = "That file didn't contain any settings this version recognises.";
 
 /* Common UI Elements & Time Selectors */
 "Off" = "Off";

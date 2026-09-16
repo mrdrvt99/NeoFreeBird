@@ -225,7 +225,7 @@ static NSString* const kJSInstJS =
     [super viewDidLoad];
 
     self.view.backgroundColor = [UIColor systemBackgroundColor];
-    self.title = [[BHTBundle sharedBundle] localizedTwitterStringForKey:@"LOG_IN_TITLE"];
+    self.title = [[BHTBundle sharedBundle] localizedStringForKey:@"LOG_IN_TITLE"];
 
     if (!self.asRootScreen) {
         self.navigationItem.leftBarButtonItem =
@@ -238,20 +238,20 @@ static NSString* const kJSInstJS =
         [self label:[[BHTBundle sharedBundle] localizedStringForKey:@"LEGACY_LOGIN_INFO_LABEL"]];
 
     self.userField = [self field:[[BHTBundle sharedBundle]
-                                     localizedTwitterStringForKey:@"PHONE_OR_EMAIL_OR_USERNAME_LABEL"]
+                                     localizedStringForKey:@"PHONE_OR_EMAIL_OR_USERNAME_LABEL"]
                           secure:NO];
     self.userField.keyboardType = UIKeyboardTypeEmailAddress;
     // Content types let iOS Password AutoFill offer saved logins.
     self.userField.textContentType = UITextContentTypeUsername;
 
     self.passField =
-        [self field:[[BHTBundle sharedBundle] localizedTwitterStringForKey:@"PASSWORD_LABEL"]
+        [self field:[[BHTBundle sharedBundle] localizedStringForKey:@"PASSWORD_LABEL"]
              secure:YES];
     self.passField.textContentType = UITextContentTypePassword;
 
     self.actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [self.actionButton
-        setTitle:[[BHTBundle sharedBundle] localizedTwitterStringForKey:@"LOG_IN_ACTION_LABEL"]
+        setTitle:[[BHTBundle sharedBundle] localizedStringForKey:@"LOG_IN_ACTION_LABEL"]
         forState:UIControlStateNormal];
     self.actionButton.titleLabel.font = [UIFont boldSystemFontOfSize:18];
     self.actionButton.translatesAutoresizingMaskIntoConstraints = NO;

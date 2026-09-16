@@ -274,3 +274,13 @@ static NSString* CleanedShareURLString(NSString* urlString) {
     self.userInteractionEnabled = false;
 }
 %end
+
+
+%hook T1ViewControllerScribeEventObserver
+- (void)viewControllerApplicationDidBecomeActive:(id)active {
+    if ([BHTSettings boolForKey:@"no_focus_lost"]) {
+        return;
+    }
+    %orig(active);
+}
+%end

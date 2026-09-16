@@ -1,6 +1,11 @@
 <div align="center">
     <img src="icon_rounded.png" alt="NeoFreeBird-BHTwitter" width="130" height="130">
 
+
+ > [!WARNING]
+ > <b>Please do not make issues on logging in.</b> Twitter has currently sealed off all login paths without attestation, so you will not be able to log in. This is a Twitter issue, not a NeoFreeBird issue. 
+
+
   # NeoFreeBird-BHTwitter
   <i>The ultimate way to tweak your Twitter/X experience.</i>
 

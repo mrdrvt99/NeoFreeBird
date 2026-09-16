@@ -98,13 +98,12 @@
 #pragma mark - Visible Toggles
 
 - (void)updateVisibleToggles {
-    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     NSMutableArray* visible = [NSMutableArray array];
     for (NSDictionary* toggleData in self.toggles) {
         NSString* parentKey = toggleData[@"parentKey"];
         if (parentKey) {
-            BOOL parentEnabled = [[defaults objectForKey:parentKey] ?: toggleData[@"default"] boolValue];
-            if (parentEnabled) {
+            // Fall back to the parent's default, not the child's, when unset.
+            if ([BHTSettings boolForKey:parentKey]) {
                 [visible addObject:toggleData];
             }
         } else {

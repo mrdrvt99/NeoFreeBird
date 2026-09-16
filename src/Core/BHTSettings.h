@@ -15,6 +15,11 @@
 + (NSString*)titleKeyForPage:(NSString*)pageKey;
 + (NSString*)subtitleKeyForPage:(NSString*)pageKey;
 + (NSDictionary*)settingForKey:(NSString*)key;
+
+// Every NSUserDefaults key the registry owns, for bulk work like the settings
+// export. Rows that only push another screen have no preference behind them and
+// are left out.
++ (NSArray<NSString*>*)allPreferenceKeys;
 + (BOOL)boolForKey:(NSString*)key;
 + (NSInteger)integerForKey:(NSString*)key;
 

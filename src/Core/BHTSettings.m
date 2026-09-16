@@ -28,6 +28,8 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                       @"default": @YES},
                     @{@"key": @"disable_rtl",
                       @"default": @NO},
+                    @{@"key": @"no_focus_lost",
+                      @"default": @NO},
                     @{@"key": @"show_scroll_indicator",
                       @"default": @NO}
                 ]
@@ -134,6 +136,12 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                     @{
                         @"key": @"download_videos",
                         @"default": @YES,
+                        @"type": @"toggle"
+                    },
+                    @{
+                        @"key": @"download_highest_quality",
+                        @"parentKey": @"download_videos",
+                        @"default": @NO,
                         @"type": @"toggle"
                     },
                     @{@"key": @"direct_save",
@@ -285,6 +293,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"type": @"toggle"
                     },
                     @{
+                        @"key": @"use_tenor_gifs",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
                         @"key": @"disable_media_carousel",
                         @"default": @NO,
                         @"type": @"toggle"
@@ -369,6 +382,22 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"key": @"blue_launch_screen",
                         @"default": @([BHTManager isTwitterBranded]),
                         @"type": @"toggle"
+                    }
+                ]
+            },
+            @"presets": @{
+                @"titleKey": @"MODERN_SETTINGS_PRESETS_TITLE",
+                @"subtitleKey": @"MODERN_SETTINGS_PRESETS_SUBTITLE",
+                @"settings": @[
+                    @{
+                        @"type": @"compactButton",
+                        @"titleKey": @"SETTINGS_EXPORT_TITLE",
+                        @"action": @"exportSettings:"
+                    },
+                    @{
+                        @"type": @"compactButton",
+                        @"titleKey": @"SETTINGS_IMPORT_TITLE",
+                        @"action": @"importSettings:"
                     }
                 ]
             },
@@ -527,6 +556,31 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsIndex(void) {
 
 + (NSDictionary*)settingForKey:(NSString*)key {
     return key ? BHTSettingsIndex()[key] : nil;
+}
+
+// A row backs a preference when it carries a default (toggles and pickers) or
+// renders a stored value as its subtitle (the font and sharing domain rows,
+// whose own key is just a row identifier).
++ (NSArray<NSString*>*)allPreferenceKeys {
+    static NSArray<NSString*>* keys;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableOrderedSet<NSString*>* collected = [NSMutableOrderedSet orderedSet];
+        for (NSDictionary* page in BHTSettingsPages().allValues) {
+            for (NSDictionary* setting in page[@"settings"]) {
+                NSString* key = setting[@"key"];
+                if (key && setting[@"default"]) {
+                    [collected addObject:key];
+                }
+                NSString* subtitleKey = setting[@"prefKeyForSubtitle"];
+                if (subtitleKey) {
+                    [collected addObject:subtitleKey];
+                }
+            }
+        }
+        keys = [collected.array copy];
+    });
+    return keys;
 }
 
 + (BOOL)boolForKey:(NSString*)key {

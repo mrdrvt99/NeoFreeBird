@@ -67,7 +67,7 @@ static UIViewController* TopMostController(void) {
         // VideoToolbox. The output path is appended to args; progress comes
         // from the processed time measured against the probed duration.
         NSString* downloadingText = [[BHTBundle sharedBundle]
-            localizedTwitterStringForKey:@"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING"];
+            localizedStringForKey:@"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING"];
         void (^ffmpegDownload)(NSString*, NSString*, double) = ^(
             NSString* args, NSString* ext, double durationMs) {
             showHUD(downloadingText);
@@ -213,6 +213,28 @@ static UIViewController* TopMostController(void) {
                              isEqualToString:@"application/x-mpegURL"] &&
                          !m3u8URL)
                     m3u8URL = url;
+            }
+
+            if ([BHTSettings boolForKey:@"download_highest_quality"] &&
+                media.mediaType == 3 && mp4URLs.count > 0) {
+                NSURL* bestURL = mp4URLs.firstObject;
+                NSInteger bestPixels = -1;
+                for (NSURL* url in mp4URLs) {
+                    NSArray<NSString*>* dims =
+                        [[BHTManager getVideoQuality:url.absoluteString]
+                            componentsSeparatedByString:@"x"];
+                    NSInteger pixels = dims.count == 2
+                                           ? dims[0].integerValue * dims[1].integerValue
+                                           : 0;
+                    if (pixels > bestPixels) {
+                        bestPixels = pixels;
+                        bestURL = url;
+                    }
+                }
+                ffmpegDownload(
+                    [NSString stringWithFormat:@"-i %@ -c copy", bestURL.absoluteString],
+                    @"mp4", 0);
+                return;
             }
 
             NSMutableArray* items = [NSMutableArray new];

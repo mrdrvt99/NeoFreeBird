@@ -348,3 +348,7 @@
 
 @interface T1AppSplitSideBarViewController : UIViewController
 @end
+
+@interface T1ViewControllerScribeEventObserver: NSObject
+- (void)viewControllerApplicationDidBecomeActive:(id)active;
+@end

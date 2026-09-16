@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.6.1",
+      "subtitle": "NeoFreeBird version 6.7.0",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -27,6 +27,15 @@
         "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/images/timeline/timeline5.png"
       ],
       "versions": [
+        {
+          "version": "12.26",
+          "buildVersion": "18",
+          "date": "2026-09-14T00:37:05Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.7.0/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.7.0_12.26.ipa",
+          "size": 247228705,
+          "minOSVersion": "15.0",
+          "localizedDescription": "New Features\n- Updated X to 12.26 (adds scheduled tweets, not my work though)\n- Added ability to use Tenor GIFs instead of GIPHY\n- Added option to always download the highest-quality MP4 file from media downloads\n- Added option to stop X from losing focus when staying out of the app for a long time\n\nFixes\n- Fixed Japanese and Russian localizations\n- Fixed the theme color not showing on horizontal scroll bars\n- Fixed the Twitter icon in the top-left corner not tinting on iPad"
+        },
         {
           "version": "12.21",
           "buildVersion": "26",

@@ -262,9 +262,44 @@ static BOOL ItemIsRetweetOfBlockingUser(id viewModel) {
         ((id (*)(id, SEL))objc_msgSend)(viewModel, authorSelector));
 }
 
-static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
-                                     long long conversationRootUserID,
-                                     NSSet<NSNumber*>* authorRepliedToUserIDs) {
+// Everything the per-item filters need to know about one section update: which
+// hide toggles are on, which screen the timeline is being shown on, and the
+// conversation lookups those two imply. Adding a filter or a surface means
+// adding a property here, a line in +contextForDataViewController: and a line
+// in -isEqualToContext:, instead of another argument threaded through every
+// function in this section.
+@interface BHTimelineFilterContext : NSObject
+
+// Hide toggles, already resolved against the surface — hideVerified stays off
+// in profiles and search, where seeing the account that was looked up is the
+// whole point of being there.
+@property (nonatomic) BOOL hideWhoToFollow;
+@property (nonatomic) BOOL hidePrompts;
+@property (nonatomic) BOOL hideVerified;
+@property (nonatomic) BOOL hideBlockedRetweets;
+
+// Surfaces.
+@property (nonatomic) BOOL inConversation;
+@property (nonatomic) BOOL inProfile;
+@property (nonatomic) BOOL inSearch;
+@property (nonatomic) BOOL inEditHistory;
+
+// Conversation lookups, filled in by -resolveConversationLookupsInSections:
+// once per section update and only when hiding verified replies needs them.
+@property (nonatomic) long long conversationRootUserID;
+@property (nonatomic, copy) NSSet<NSNumber*>* authorRepliedToUserIDs;
+
+// NO when nothing in this context can hide anything, so the sections can be
+// handed back untouched.
+@property (nonatomic, readonly) BOOL shouldFilter;
+
++ (instancetype)contextForDataViewController:(TFNItemsDataViewController*)dataViewController;
+- (void)resolveConversationLookupsInSections:(NSArray*)sections;
+- (BOOL)isEqualToContext:(BHTimelineFilterContext*)other;
+
+@end
+
+static BOOL BHShouldHideVerifiedItem(id viewModel, BHTimelineFilterContext* context) {
     SEL verifiedSelector = @selector(isFromUserVerified);
     if (![viewModel respondsToSelector:verifiedSelector]) {
         return NO;
@@ -283,24 +318,24 @@ static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
         }
     }
 
-    if (inConversation) {
+    if (context.inConversation) {
         if (!ItemIsConversationThreadReply(viewModel)) {
             return NO;
         }
 
-        if (conversationRootUserID != 0) {
+        if (context.conversationRootUserID != 0) {
             long long repliedUserID = ItemRepresentedFromUserID(viewModel);
 
-            BOOL isAuthorsOwnReply = repliedUserID == conversationRootUserID;
+            BOOL isAuthorsOwnReply = repliedUserID == context.conversationRootUserID;
             BOOL authorRepliedToThisUser =
-                [authorRepliedToUserIDs containsObject:@(repliedUserID)];
+                [context.authorRepliedToUserIDs containsObject:@(repliedUserID)];
             if (isAuthorsOwnReply || authorRepliedToThisUser) {
                 return NO;
             }
         }
     }
 
-    if (!inConversation && ItemIsReplyWithSocialContext(viewModel)) {
+    if (!context.inConversation && ItemIsReplyWithSocialContext(viewModel)) {
         return NO;
     }
 
@@ -316,33 +351,28 @@ static BOOL BHShouldHideVerifiedItem(id viewModel, BOOL inConversation,
     return YES;
 }
 
-static BOOL ShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePrompts,
-                                   BOOL hideVerified, BOOL hideBlockedRetweets,
-                                   BOOL inConversation, BOOL inProfile,
-                                   long long conversationRootUserID,
-                                   NSSet<NSNumber*>* authorRepliedToUserIDs) {
+static BOOL ShouldHideTimelineItem(id item, BHTimelineFilterContext* context) {
     id viewModel = unwrapDataViewItem(item);
     NSString* className = NSStringFromClass([viewModel classForCoder]);
 
-    if (hideVerified && BHShouldHideVerifiedItem(viewModel, inConversation, conversationRootUserID,
-                                                 authorRepliedToUserIDs)) {
+    if (context.hideVerified && BHShouldHideVerifiedItem(viewModel, context)) {
         return YES;
     }
 
-    if (hideBlockedRetweets && ItemIsRetweetOfBlockingUser(viewModel)) {
+    if (context.hideBlockedRetweets && ItemIsRetweetOfBlockingUser(viewModel)) {
         return YES;
     }
 
-    if (hidePrompts && [className isEqualToString:@"TwitterURT.URTTimelinePromptViewModel"]) {
+    if (context.hidePrompts && [className isEqualToString:@"TwitterURT.URTTimelinePromptViewModel"]) {
         return YES;
     }
 
-    if (hideWhoToFollow && [ItemScribeComponent(viewModel)
-                               isEqualToString:@"suggest_who_to_follow"]) {
+    if (context.hideWhoToFollow && [ItemScribeComponent(viewModel)
+                                       isEqualToString:@"suggest_who_to_follow"]) {
         return YES;
     }
 
-    if (hideWhoToFollow && inProfile &&
+    if (context.hideWhoToFollow && context.inProfile &&
         [className isEqualToString:@"T1TwitterSwift.URTTimelineCarouselViewModel"]) {
         return YES;
     }
@@ -353,51 +383,43 @@ static BOOL ShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePromp
         return NO;
     }
 
-    if (inConversation && [entryID hasPrefix:@"tweetdetailrelatedtweets"]) {
+    if (context.inConversation && [entryID hasPrefix:@"tweetdetailrelatedtweets"]) {
         return YES;
     }
 
-    if (hideWhoToFollow && [entryID containsString:@"who-to-follow"]) {
+    if (context.hideWhoToFollow && [entryID containsString:@"who-to-follow"]) {
         return YES;
     }
 
     return NO;
 }
 
-// More efficient way to filter timeline items than calling ShouldHideTimelineItem() repeatedly, which
-// slows down the app a LOT
-static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL hidePrompts,
-                                           BOOL hideVerified, BOOL hideBlockedRetweets,
-                                           BOOL inConversation, BOOL inProfile,
-                                           long long conversationRootUserID,
-                                           NSSet<NSNumber*>* authorRepliedToUserIDs) {
+// Calling ShouldHideTimelineItem() for every item on every section update slows
+// the app down a LOT, so verdicts are memoized by entry ID. They only hold for
+// the context that produced them; a different context drops the whole cache.
+static NSCache<NSString*, NSNumber*>* TimelineVerdictCacheForContext(
+    BHTimelineFilterContext* context) {
     static NSCache<NSString*, NSNumber*>* cache;
-    static NSUInteger cachedFlags = NSUIntegerMax;
-    static long long cachedRootUserID = 0;
-    static NSSet<NSNumber*>* cachedAuthorRepliedToUserIDs;
+    static BHTimelineFilterContext* cachedContext;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         cache = [NSCache new];
         cache.countLimit = 4000;
     });
 
-    
-    NSUInteger flags = (hideWhoToFollow << 0) | (hidePrompts << 1) | (hideVerified << 2) |
-                       (inConversation << 3) | (inProfile << 4) | (hideBlockedRetweets << 5);
-    BOOL repliedSetChanged = authorRepliedToUserIDs != cachedAuthorRepliedToUserIDs &&
-                             ![authorRepliedToUserIDs isEqualToSet:cachedAuthorRepliedToUserIDs];
-    if (flags != cachedFlags || conversationRootUserID != cachedRootUserID || repliedSetChanged) {
+    if (![context isEqualToContext:cachedContext]) {
         [cache removeAllObjects];
-        cachedFlags = flags;
-        cachedRootUserID = conversationRootUserID;
-        cachedAuthorRepliedToUserIDs = authorRepliedToUserIDs;
+        cachedContext = context;
     }
 
+    return cache;
+}
+
+static BOOL MemoizedShouldHideTimelineItem(id item, NSCache<NSString*, NSNumber*>* cache,
+                                           BHTimelineFilterContext* context) {
     NSString* entryID = ItemEntryID(unwrapDataViewItem(item));
     if (!entryID) {
-        return ShouldHideTimelineItem(item, hideWhoToFollow, hidePrompts, hideVerified,
-                                      hideBlockedRetweets, inConversation, inProfile,
-                                      conversationRootUserID, authorRepliedToUserIDs);
+        return ShouldHideTimelineItem(item, context);
     }
 
     NSNumber* cached = [cache objectForKey:entryID];
@@ -405,9 +427,7 @@ static BOOL MemoizedShouldHideTimelineItem(id item, BOOL hideWhoToFollow, BOOL h
         return cached.boolValue;
     }
 
-    BOOL hide = ShouldHideTimelineItem(item, hideWhoToFollow, hidePrompts, hideVerified,
-                                       hideBlockedRetweets, inConversation, inProfile,
-                                       conversationRootUserID, authorRepliedToUserIDs);
+    BOOL hide = ShouldHideTimelineItem(item, context);
     [cache setObject:@(hide) forKey:entryID];
     return hide;
 }
@@ -468,28 +488,75 @@ static NSSet<NSNumber*>* ConversationAuthorRepliedToUserIDs(NSArray* sections,
     return repliedToUserIDs;
 }
 
+@implementation BHTimelineFilterContext
+
++ (instancetype)contextForDataViewController:(TFNItemsDataViewController*)dataViewController {
+    BHTimelineFilterContext* context = [self new];
+
+    context.inConversation =
+        IsInHierarchyOfClass(dataViewController, @"T1ConversationContainerViewController");
+    context.inProfile = IsInHierarchyOfClass(dataViewController, @"T1ProfileViewController");
+    context.inSearch = IsInHierarchyOfClass(dataViewController, @"TTSSearchContainerViewController");
+    context.inEditHistory = IsInHierarchyOfClass(dataViewController,
+     @"_TtC14T1TwitterSwiftP33_9D4C9ABB7A0EDE8E7A7EFD08474E735140T1ActivityHistoryContainerViewController");
+
+    context.hideWhoToFollow = [BHTSettings boolForKey:@"hide_who_to_follow"];
+    context.hidePrompts = [BHTSettings boolForKey:@"hide_timeline_prompts"];
+    context.hideVerified = [BHTSettings boolForKey:@"hide_verified_tweets"] &&
+                           !context.inProfile && !context.inSearch;
+    context.hideBlockedRetweets = [BHTSettings boolForKey:@"hide_blocked_retweets"];
+
+    return context;
+}
+
+- (BOOL)shouldFilter {
+    // inProfile and inSearch only ever relax other rules, so neither is reason
+    // enough on its own; inConversation is, because related-tweet modules are
+    // dropped in a conversation whatever the toggles say.
+    return self.hideWhoToFollow || self.hidePrompts || self.hideVerified ||
+           self.hideBlockedRetweets || self.inConversation;
+}
+
+- (void)resolveConversationLookupsInSections:(NSArray*)sections {
+    if (!self.hideVerified || !self.inConversation) {
+        self.conversationRootUserID = 0;
+        self.authorRepliedToUserIDs = nil;
+        return;
+    }
+
+    self.conversationRootUserID = ConversationRootUserID(sections);
+    self.authorRepliedToUserIDs =
+        ConversationAuthorRepliedToUserIDs(sections, self.conversationRootUserID);
+}
+
+- (BOOL)isEqualToContext:(BHTimelineFilterContext*)other {
+    if (!other) {
+        return NO;
+    }
+
+    return self.hideWhoToFollow == other.hideWhoToFollow &&
+           self.hidePrompts == other.hidePrompts && self.hideVerified == other.hideVerified &&
+           self.hideBlockedRetweets == other.hideBlockedRetweets &&
+           self.inConversation == other.inConversation && self.inProfile == other.inProfile &&
+           self.inSearch == other.inSearch &&
+           self.conversationRootUserID == other.conversationRootUserID &&
+           self.inEditHistory == other.inEditHistory &&
+           (self.authorRepliedToUserIDs == other.authorRepliedToUserIDs ||
+            [self.authorRepliedToUserIDs isEqualToSet:other.authorRepliedToUserIDs]);
+}
+
+@end
+
 static NSArray* FilteredTimelineSections(TFNItemsDataViewController* dataViewController,
                                          NSArray* sections) {
-    BOOL hideWhoToFollow = [BHTSettings boolForKey:@"hide_who_to_follow"];
-    BOOL hidePrompts = [BHTSettings boolForKey:@"hide_timeline_prompts"];
-    BOOL inConversation =
-        IsInHierarchyOfClass(dataViewController, @"T1ConversationContainerViewController");
-    BOOL inProfile = IsInHierarchyOfClass(dataViewController, @"T1ProfileViewController");
-
-    BOOL hideVerified = [BHTSettings boolForKey:@"hide_verified_tweets"] && !inProfile;
-    BOOL hideBlockedRetweets = [BHTSettings boolForKey:@"hide_blocked_retweets"];
-
-    if (!hideWhoToFollow && !hidePrompts && !hideVerified && !hideBlockedRetweets &&
-        !inConversation) {
+    BHTimelineFilterContext* context =
+        [BHTimelineFilterContext contextForDataViewController:dataViewController];
+    if (!context.shouldFilter) {
         return sections;
     }
 
-    long long conversationRootUserID =
-        (hideVerified && inConversation) ? ConversationRootUserID(sections) : 0;
-    NSSet<NSNumber*>* authorRepliedToUserIDs =
-        (hideVerified && inConversation)
-            ? ConversationAuthorRepliedToUserIDs(sections, conversationRootUserID)
-            : nil;
+    [context resolveConversationLookupsInSections:sections];
+    NSCache<NSString*, NSNumber*>* verdicts = TimelineVerdictCacheForContext(context);
 
     // Modules can share a section with unrelated items, so filtering is per item;
     // a purely filtered section (like the Discover More one) empties and is dropped.
@@ -506,9 +573,7 @@ static NSArray* FilteredTimelineSections(TFNItemsDataViewController* dataViewCon
         NSMutableIndexSet* removed = [NSMutableIndexSet indexSet];
 
         for (NSUInteger i = 0; i < items.count; i++) {
-            if (MemoizedShouldHideTimelineItem(items[i], hideWhoToFollow, hidePrompts, hideVerified,
-                                               hideBlockedRetweets, inConversation, inProfile,
-                                               conversationRootUserID, authorRepliedToUserIDs)) {
+            if (MemoizedShouldHideTimelineItem(items[i], verdicts, context)) {
                 [removed addIndex:i];
             }
         }
@@ -530,6 +595,7 @@ static NSArray* FilteredTimelineSections(TFNItemsDataViewController* dataViewCon
 
     return modified ? [filteredSections copy] : sections;
 }
+
 
 %hook TFNItemsDataViewController
 
