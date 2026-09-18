@@ -335,12 +335,6 @@
     ];
     self.contributorCells = @[
         @{
-            @"title": @"thea 🪽",
-            @"username": @"theacrat",
-            @"avatarURL": @"https://unavatar.io/x/theacrat",
-            @"userID": @"1830499505718075392"
-        },
-        @{
             @"title": @"matt sephton",
             @"username": @"gingerbeardman",
             @"avatarURL": @"https://unavatar.io/x/gingerbeardman",

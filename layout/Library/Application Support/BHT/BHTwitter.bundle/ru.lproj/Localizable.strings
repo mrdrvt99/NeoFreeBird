@@ -17,6 +17,7 @@
 "DONE" = "Готово";
 "SAVE" = "Сохранить";
 "SAVE_ACTION_LABEL" = "Сохранить";
+"OK_ACTION_LABEL" = "ОК";
 
 
 /*Settings*/
@@ -71,6 +72,9 @@
 "HIDE_WHO_TO_FOLLOW_TITLE" = "Без «Кого читать»";
 "HIDE_WHO_TO_FOLLOW_DETAIL" = "Убрать рекомендации, на кого подписаться.";
 
+"NO_FOCUS_LOST_TITLE" = "Без потери места в ленте";
+"NO_FOCUS_LOST_DETAIL" = "Не позволяет Twitter обнаруживать переход в другое приложение, чтобы вы не теряли место в ветке обсуждения.";
+
 "HIDE_TIMELINE_PROMPTS_TITLE" = "Без подсказок в ленте";
 "HIDE_TIMELINE_PROMPTS_DETAIL" = "Убрать баннеры вроде «Добавить контакты».";
 
@@ -94,6 +98,9 @@
 
 "LIKE_CONFIRM_TITLE" = "Подтверждение лайка";
 "LIKE_CONFIRM_DETAIL" = "Запрашивать подтверждение перед лайком.";
+
+"USE_TENOR_GIFS_TITLE" = "Использовать GIF-файлы Tenor";
+"USE_TENOR_GIFS_DETAIL" = "Использовать GIF-файлы Tenor вместо GIF-файлов Twitter (GIPHY). В Tenor больше вариантов.";
 
 "TWEET_CONFIRM_TITLE" = "Подтверждение твита";
 "TWEET_CONFIRM_DETAIL" = "Спрашивать перед публикацией твита.";
@@ -214,6 +221,9 @@
 
 "DOWNLOAD_VIDEOS_TITLE" = "Скачать медиа";
 "DOWNLOAD_VIDEOS_DETAIL" = "Сохранять видео и GIF прямо из меню твита.";
+
+"DOWNLOAD_HIGHEST_QUALITY_TITLE" = "Всегда скачивать в лучшем качестве";
+"DOWNLOAD_HIGHEST_QUALITY_DETAIL" = "Пропускать выбор качества и сразу сохранять MP4 в наилучшем качестве.";
 
 "UPLOAD_FULL_HD_VIDEOS_TITLE" = "Загружать видео в Full HD";
 "UPLOAD_FULL_HD_VIDEOS_DETAIL" = "Разрешает загружать видео в разрешении 1080p.";
@@ -363,6 +373,10 @@
 "LEGACY_LOGIN_VERIFYING_STATUS" = "Проверка…";
 "LEGACY_LOGIN_SIGNING_IN_STATUS" = "Выполняется вход…";
 "LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Недоступно";
+"PHONE_OR_EMAIL_OR_USERNAME_LABEL" = "Телефон, эл. почта или имя пользователя";
+"PASSWORD_LABEL" = "Пароль";
+"LOG_IN_ACTION_LABEL" = "Войти";
+"LOG_IN_TITLE" = "Вход";
 "LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Классы для входа отсутствуют.";
 "LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "Не удалось сформировать команду.";
 "LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Сбой предотвращен";
@@ -379,6 +393,7 @@
 "LEGACY_LOGIN_UNKNOWN_ERROR" = "Неизвестная ошибка";
 
 "DOWNLOAD_ACTIVITY_VIEW_LABEL" = "Скачать медиа";
+"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING" = "Скачивание";
 
 /* Subscription Keys */
 "SUBSCRIPTION_APP_ICON_SETTINGS_TITLE" = "Сменить иконку приложения";
@@ -389,6 +404,26 @@
 
 "SUBSCRIPTION_UNDO_SEND_DURATION_TITLE" = "Время отмены";
 "SUBSCRIPTION_UNDO_SEND_DURATION_DETAIL" = "Выберите, как долго кнопка отмены будет отображаться после отправки твита.";
+
+/* Presets — settings import and export */
+"SETTINGS_EXPORT_TITLE" = "Экспорт настроек";
+"SETTINGS_IMPORT_TITLE" = "Импорт настроек";
+
+"SETTINGS_EXPORT_FAILED_TITLE" = "Ошибка экспорта";
+"SETTINGS_EXPORT_WRITE_FAILED" = "Не удалось создать файл настроек.";
+
+"SETTINGS_IMPORT_CONFIRM_TITLE" = "Импортировать настройки?";
+"SETTINGS_IMPORT_CONFIRM_MESSAGE" = "Текущие настройки NeoFreeBird будут заменены настройками из выбранного файла.";
+"SETTINGS_IMPORT_CONFIRM_BUTTON" = "Выбрать файл";
+"SETTINGS_IMPORT_FAILED_TITLE" = "Ошибка импорта";
+"SETTINGS_IMPORT_SUCCESS_TITLE" = "Настройки импортированы";
+"SETTINGS_IMPORT_SUCCESS_MESSAGE" = "Применено настроек: %ld. Перезапустите приложение, чтобы все они вступили в силу.";
+"SETTINGS_IMPORT_RESTART_BUTTON" = "Перезапустить";
+"SETTINGS_IMPORT_LATER_BUTTON" = "Позже";
+
+"SETTINGS_TRANSFER_UNREADABLE_FILE" = "Не удалось прочитать этот файл.";
+"SETTINGS_TRANSFER_MALFORMED_FILE" = "Этот файл не является экспортом настроек NeoFreeBird.";
+"SETTINGS_TRANSFER_NO_SETTINGS" = "В этом файле нет настроек, поддерживаемых этой версией.";
 
 /* Common UI Elements & Time Selectors */
 "Off" = "Выкл.";
