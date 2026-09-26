@@ -164,7 +164,7 @@
 "HIDE_PROMOTED_TITLE" = "Sans pubs";
 "HIDE_PROMOTED_DETAIL" = "Supprime toutes les pubs.";
 
-"UNDO_TWEET_TITLE" = "Annuler Tweet";
+"UNDO_TWEET_TITLE" = "Annuler le Tweet";
 
 "DOWNLOAD_VIDEOS_TITLE" = "Télécharger les médias";
 "DOWNLOAD_VIDEOS_DETAIL" = "Sauvegarde vidéos et GIFs directement.";
@@ -247,7 +247,7 @@
 
 /*Tab bar*/
 "CUSTOM_TAB_BAR_SETTINGS_NAVIGATION_TITLE" = "Modifier la barre d’onglets";
-"CUSTOM_TAB_BAR_GRID_DETAIL" = "Tap a destination to add or remove it. Drag the bar below to reorder.";
+"CUSTOM_TAB_BAR_GRID_DETAIL" = "Cliquez sur un menu de navigation pour l'ajouter ou l'enlever.";
 "CUSTOM_TAB_BAR_RESET_MESSAGE" = "Voulez-vous vraiment réinitialiser la barre de navigation ?";
 
 /* Restore tab labels */
@@ -265,43 +265,89 @@
 "RESTORE_TWITTER_NAMES_DETAIL" = "Remplace 'X' par 'Twitter', 'Post' par 'Tweet', 'Repost' par 'Retweet', etc. dans toute l'interface de l'application.";
 
 /*Deprecated*/
-"MODERN_SETTINGS_PLACEHOLDER_TEXT" = "Rien à voir ici — pour le moment.";
+"MODERN_SETTINGS_PLACEHOLDER_TEXT" = "Rien à voir ici pour le moment.";
 "MODERN_SETTINGS_PLACEHOLDER_DETAIL_TEXT" = "Cette section arrive bientôt. Restez à l'affût pour plus de fonctionnalités NeoFreeBird !";
 
 "SOURCE_UNAVAILABLE" = "Source indisponible";
 
 /*App lock*/
-"PADLOCK_LOCKED_LABEL" = "Locked";
+"PADLOCK_LOCKED_LABEL" = "Vérouillé";
 
 /*Source labels*/
-"UNKNOWN_SOURCE" = "Unknown Source";
+"UNKNOWN_SOURCE" = "Source inconnue";
 
 /*Media downloads*/
-"DOWNLOAD_VIDEO_NUMBER_TITLE" = "Video %lu";
-"UNKNOWN_ERROR" = "An unknown error occurred.";
+"DOWNLOAD_VIDEO_NUMBER_TITLE" = "Vidéo %lu";
+"UNKNOWN_ERROR" = "Une erreur inconnue s'est produite.";
 
 /*Custom fonts*/
-"INSTALL_IFONT_BUTTON_TITLE" = "iFont application";
-"FONT_SYSTEM_DEFAULT_SUBTITLE" = "System Default";
+"INSTALL_IFONT_BUTTON_TITLE" = "application tierce de polices, "ifont"";
+"FONT_SYSTEM_DEFAULT_SUBTITLE" = "Polices par défaut";
 
 /*Legacy login*/
-"LEGACY_LOGIN_INFO_LABEL" = "Log in with your username and password.\n\nGoogle and Apple sign-in aren't supported. If your account uses one of those, add a password to it first.";
-"LEGACY_LOGIN_MISSING_INPUT_TITLE" = "Missing input";
-"LEGACY_LOGIN_MISSING_INPUT_MESSAGE" = "Enter username and password.";
-"LEGACY_LOGIN_VERIFYING_STATUS" = "Verifying…";
-"LEGACY_LOGIN_SIGNING_IN_STATUS" = "Signing in…";
-"LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Unavailable";
-"LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Login classes missing.";
-"LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "Could not build command.";
-"LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Crash avoided";
-"LEGACY_LOGIN_UNEXPECTED_RESPONSE_TITLE" = "Unexpected response";
-"LEGACY_LOGIN_NO_TOKEN_NO_CHALLENGE_MESSAGE" = "No token and no challenge.";
-"LEGACY_LOGIN_CHALLENGE_MISSING_INFO_MESSAGE" = "Challenge is missing its request id or URL.";
-"LEGACY_LOGIN_CHALLENGE_CLASSES_MISSING_MESSAGE" = "Challenge/host classes missing.";
-"LEGACY_LOGIN_BUILD_CHALLENGE_FAILED_MESSAGE" = "Could not build challenge.";
-"LEGACY_LOGIN_NO_TOKEN_MESSAGE" = "No token in response.";
-"LEGACY_LOGIN_FAILED_TITLE" = "Login failed";
-"LEGACY_LOGIN_NO_ACCOUNT_MESSAGE" = "No account was returned.";
-"LEGACY_LOGIN_RATE_LIMITED_TITLE" = "Likely rate limited (243)";
-"LEGACY_LOGIN_RATE_LIMITED_MESSAGE" = "Too many attempts. Wait a while or switch network/VPN, then try again.\n\nDetails:\n%@";
-"LEGACY_LOGIN_UNKNOWN_ERROR" = "Unknown error";
+"LEGACY_LOGIN_INFO_LABEL" = "Connectez vous avec votre nom d'utilisateur et mot de passe. La connection par identifiants Google ou Apple n'est pas supportée.";
+"LEGACY_LOGIN_MISSING_INPUT_TITLE" = "Champ manquant";
+"LEGACY_LOGIN_MISSING_INPUT_MESSAGE" = "Veuillez saisir votre nom d'utilisateur et mot de passe.";
+"LEGACY_LOGIN_VERIFYING_STATUS" = "Vérification…";
+"LEGACY_LOGIN_SIGNING_IN_STATUS" = "Connexion…";
+"LEGACY_LOGIN_UNAVAILABLE_TITLE" = "Echec de la connexion";
+"LEGACY_LOGIN_CLASSES_MISSING_MESSAGE" = "Classes de connexion manquantes.";
+"LEGACY_LOGIN_BUILD_COMMAND_FAILED_MESSAGE" = "La commande n'a pas pu être créée.";
+"LEGACY_LOGIN_CRASH_AVOIDED_TITLE" = "Crash évité";
+"LEGACY_LOGIN_UNEXPECTED_RESPONSE_TITLE" = "Réponse innatendue";
+"LEGACY_LOGIN_NO_TOKEN_NO_CHALLENGE_MESSAGE" = "Aucun token ni challenge.";
+"LEGACY_LOGIN_CHALLENGE_MISSING_INFO_MESSAGE" = "Requete d'id ou d'URL manquante pour challenge.";
+"LEGACY_LOGIN_CHALLENGE_CLASSES_MISSING_MESSAGE" = "les classes challenge/hote sont manquantes.";
+"LEGACY_LOGIN_BUILD_CHALLENGE_FAILED_MESSAGE" = "Challenge n'a pas pu être crée";
+"LEGACY_LOGIN_NO_TOKEN_MESSAGE" = "Aucun token en réponse";
+"LEGACY_LOGIN_FAILED_TITLE" = "Echec de la connexion";
+"LEGACY_LOGIN_NO_ACCOUNT_MESSAGE" = "Aucun compte trouvé";
+"LEGACY_LOGIN_RATE_LIMITED_TITLE" = "Caractères limités (243)";
+"LEGACY_LOGIN_RATE_LIMITED_MESSAGE" = "Beaucoup trop de tentatives. Patientez un moment ou changez de réseau/VPN, ensuite réessayez.";
+"LEGACY_LOGIN_UNKNOWN_ERROR" = "Erreur inconnue";
+
+"DOWNLOAD_ACTIVITY_VIEW_LABEL" = "Télécharger ce media";
+"DOWNLOAD_LIVE_ACTIVITY_DOWNLOADING" = "Téléchargement..";
+
+/* Subscription Keys */
+"SUBSCRIPTION_APP_ICON_SETTINGS_TITLE" = "Changer l'icone de l'app";
+"SUBSCRIPTION_APP_ICON_SETTINGS_DETAIL" = "Choisir une iconne personnalisée à afficher sur votre écran d'accueil. Vous pourrez la rechangez quand vous voudrez.";
+
+"SUBSCRIPTION_TAB_CUSTOMIZATION_RESTORE_BUTTON_TITLE" = "Rétablir par défaut";
+"Restore to default" = "Rétablir par défaut";
+
+"SUBSCRIPTION_UNDO_SEND_DURATION_TITLE" = "Durée d'annulation";
+"SUBSCRIPTION_UNDO_SEND_DURATION_DETAIL" = "Choisir la durée d'affichage du bouton "annuler l'envoi" après l'envoi d'un message";
+
+/* Presets — settings import and export */
+"SETTINGS_EXPORT_TITLE" = "Exporter les configurations";
+"SETTINGS_IMPORT_TITLE" = "Importer les configurations";
+
+"SETTINGS_EXPORT_FAILED_TITLE" = "Exportation échouée";
+"SETTINGS_EXPORT_WRITE_FAILED" = "Le fichier de configuration n'a pas pu etre crée";
+
+"SETTINGS_IMPORT_CONFIRM_TITLE" = "Importer les configurations ?";
+"SETTINGS_IMPORT_CONFIRM_MESSAGE" = "Vos configurations actuelles seront remplacées par celles du fichier séléctionné.";
+"SETTINGS_IMPORT_CONFIRM_BUTTON" = "Choisir un fichier";
+"SETTINGS_IMPORT_FAILED_TITLE" = "Importation échouée";
+"SETTINGS_IMPORT_SUCCESS_TITLE" = "Paramètres importés";
+"SETTINGS_IMPORT_SUCCESS_MESSAGE" = "paramètres appliqués. Redémarrez l'application pour appliquer les modifications.";
+"SETTINGS_IMPORT_RESTART_BUTTON" = "Redémarrer";
+"SETTINGS_IMPORT_LATER_BUTTON" = "Plus tard";
+
+"SETTINGS_TRANSFER_UNREADABLE_FILE" = "Ce fichier n'a pas pu être lu.";
+"SETTINGS_TRANSFER_MALFORMED_FILE" = "Ce fichier n'est pas une configuration NeoFreeBird.";
+"SETTINGS_TRANSFER_NO_SETTINGS" = "Ce fichier ne contient aucune configuration que cette version NeoFreeBird puisse reconnaître.";
+
+/* Common UI Elements & Time Selectors */
+"Off" = "Off";
+"Cancel" = "Annuler";
+"5 seconds" = "5 secondes";
+"10 seconds" = "10 secondes";
+"20 seconds" = "20 secondes";
+"30 seconds" = "30 secondes";
+"60 seconds" = "60 secondes";
+
+/* Undo Duration Labels (Added for TweetsSettingsViewController) */
+"GENERIC_OFF_LABEL" = "Désactivé";
+"SUBSCRIPTION_UNDO_SEND_DURATION_LABEL" = "%ld secondes";

@@ -145,6 +145,10 @@
 @property (nonatomic) __weak id<T1StatusInlineActionButtonDelegate> delegate;
 @end
 
+@interface TTAStatusAuthorView: UIView
+@property UIButton *messageButton;
+@end
+
 @interface TTAStatusInlineReplyButton : UIView
 @property (nonatomic) __weak id<T1StatusInlineActionButtonDelegate> delegate;
 @end

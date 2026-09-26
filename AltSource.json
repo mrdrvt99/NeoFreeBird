@@ -14,7 +14,7 @@
       "name": "Twitter",
       "bundleIdentifier": "com.atebits.Tweetie2",
       "developerName": "actuallyaridan, nyaathea, timi2506, theacrat, orionblur",
-      "subtitle": "NeoFreeBird version 6.7.0",
+      "subtitle": "NeoFreeBird version 6.7.1",
       "localizedDescription": "NeoFreeBird-BHTwitter, changed to look like the app before the rebrand.",
       "iconURL": "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/icon_rounded.png",
       "tintColor": "#1DA1F2",
@@ -27,6 +27,15 @@
         "https://raw.githubusercontent.com/orionblur/NeoFreeBird/v6/images/timeline/timeline5.png"
       ],
       "versions": [
+        {
+          "version": "12.28.1",
+          "buildVersion": "2",
+          "date": "2026-09-24T03:46:28Z",
+          "downloadURL": "https://github.com/orionblur/NeoFreeBird/releases/download/v6.7.1/orionblur-NFB-BHTwitter-sideloaded-Twitter_6.7.1_12.28.1.ipa",
+          "size": 258714574,
+          "minOSVersion": "15.0",
+          "localizedDescription": "- Added option to hide Message button on tweets\n- Updated X to 12.28.1\n- Removed the “Try Grok Bot” button"
+        },
         {
           "version": "12.26",
           "buildVersion": "18",

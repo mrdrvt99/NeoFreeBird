@@ -247,6 +247,15 @@ static NSNumber* FeatureSwitchOverrideValueForKey(NSString* key) {
         return @99;
     }
 
+    if ([key isEqualToString:@"grok_ios_grok_bot_upsells_enabled"] ||
+        [key isEqualToString:@"grok_ios_grok_bot_sidebar_enabled"] ||
+        [key isEqualToString:@"grok_ios_grok_bot_home_header_enabled"] ||
+        [key isEqualToString:@"grok_ios_grok_bot_home_hero_enabled"] ||
+        [key isEqualToString:@"grok_ios_grok_bot_preset_enabled"] ||
+        [key isEqualToString:@"grok_ios_grok_bot_tab_icon_enabled"]) {
+        return @NO;
+    }
+
     // 0 hides the Communities tab, 1 is contextual-only; anything else shows it.
     if ([key isEqualToString:@"c9s_tab_visibility"]) {
         return @2;

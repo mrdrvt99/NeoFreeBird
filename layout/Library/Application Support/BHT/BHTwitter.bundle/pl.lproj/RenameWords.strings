@@ -1,0 +1,52 @@
+/*
+Generic terminology replacements for the "Restore Twitter names" feature, applied
+to every localized string and to server-composed text (notification rows etc.).
+
+Lowercase keys match whole words case-insensitively and the replacement copies the
+matched word's capitalisation ("Reposts" -> "Retweets", "REPOST" -> "RETWEET").
+A replacement carrying its own capital keeps it even for lowercase matches
+("posted" -> "Tweeted"). Keys that contain an uppercase letter match exactly and
+are replaced verbatim ("X" -> "Twitter").
+List each word in only one of the two forms, and never use a replacement value that
+matches another key — replacements must be stable if the text is processed twice.
+
+Strictly per-language: a language without its own copy of this file gets no generic
+renaming at all.
+*/
+
+/*
+Polish side notes. X's Polish UI calls a post "wpis" and a repost "Podaj dalej wpis"
+("Wpisy podane dalej" for the list); the old Twitter app used "Tweet" and "Podaj
+dalej" ("Tweety podane dalej"). Polish nouns inflect and matching is per whole
+word, so every case form of "wpis" is listed. The nominative and accusative of
+"wpis" are identical and X pairs them with inanimate adjectives ("kolejny wpis"),
+so both map to "Tweet" rather than the colloquial accusative "Tweeta".
+The phrase keys are longer than the single words, so they win and are replaced
+as a whole ("Podaj dalej wpis" -> "Podaj dalej", not "Podaj dalej Tweet").
+The "we" keys fix the preposition: Polish writes "we wpisie" because the next
+word starts with "w" + consonant, but "w Tweecie" before "Tw". The preposition "z"
+keeps its short form before "wp" ("z wpisu"), so it needs no key and becomes
+"z Tweeta" on its own.
+*/
+
+"podaj dalej wpis" = "podaj dalej";
+"opublikuj wpis" = "tweetnij";
+
+"we wpisie" = "w Tweecie";
+"we wpisach" = "w Tweetach";
+
+"wpis" = "Tweet";
+"wpisu" = "Tweeta";
+"wpisowi" = "Tweetowi";
+"wpisem" = "Tweetem";
+"wpisie" = "Tweecie";
+"wpisy" = "Tweety";
+"wpisów" = "Tweetów";
+"wpisom" = "Tweetom";
+"wpisami" = "Tweetami";
+"wpisach" = "Tweetach";
+
+"opublikuj" = "tweetnij";
+
+"Premium" = "Blue";
+"X" = "Twitter";

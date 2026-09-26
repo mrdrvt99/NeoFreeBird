@@ -181,6 +181,9 @@
 "HIDE_FOLLOW_BUTTON_TITLE" = "No Follow button on Tweets";
 "HIDE_FOLLOW_BUTTON_DETAIL" = "Hides the Follow button on Tweets.";
 
+"HIDE_MESSAGE_BUTTON_TITLE" = "No Message button on Tweets";
+"HIDE_MESSAGE_BUTTON_DETAIL" = "Hides the Message button on Tweets.";
+
 "RESTORE_FOLLOW_BUTTON_TITLE" = "No Subscribe button";
 "RESTORE_FOLLOW_BUTTON_DETAIL" = "Hides the Subscribe button on Tweets and in profiles.";
 

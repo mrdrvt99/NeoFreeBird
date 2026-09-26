@@ -10,7 +10,7 @@ on:
         type: string
       target_version:
         description: "Target iOS Version"
-        default: "14.0"
+        default: "15.0"
         required: true
         type: string
       decrypted_ipa_url:

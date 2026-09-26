@@ -182,6 +182,13 @@
 - (void)setFollowControlHidden:(BOOL)hidden {
     %orig([BHTSettings boolForKey:@"hide_follow_button"] ? YES : hidden);
 }
+- (void)didMoveToWindow {
+    if ([BHTSettings boolForKey:@"hide_follow_button"]) {
+        self.messageButton.hidden = YES;
+        self.messageButton.userInteractionEnabled = NO;
+        self.messageButton.alpha = 0.0;
+    }
+}
 
 %end
 

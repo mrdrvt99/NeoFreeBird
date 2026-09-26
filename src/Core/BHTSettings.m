@@ -222,6 +222,11 @@ static NSDictionary<NSString*, NSDictionary*>* BHTSettingsPages(void) {
                         @"type": @"toggle"
                     },
                     @{
+                        @"key": @"hide_message_button",
+                        @"default": @NO,
+                        @"type": @"toggle"
+                    },
+                    @{
                         @"key": @"show_unrounded_counts",
                         @"default": @NO,
                         @"type": @"toggle"

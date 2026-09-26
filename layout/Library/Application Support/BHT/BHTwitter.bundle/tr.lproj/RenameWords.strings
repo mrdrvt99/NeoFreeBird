@@ -1,0 +1,42 @@
+/*
+Generic terminology replacements for the "Restore Twitter names" feature, applied
+to every localized string and to server-composed text (notification rows etc.).
+
+Lowercase keys match whole words case-insensitively and the replacement copies the
+matched word's capitalisation ("Reposts" -> "Retweets", "REPOST" -> "RETWEET").
+A replacement carrying its own capital keeps it even for lowercase matches
+("posted" -> "Tweeted"). Keys that contain an uppercase letter match exactly and are
+replaced verbatim ("X" -> "Twitter").
+List each word in only one of the two forms, and never use a replacement value that
+matches another key — replacements must be stable if the text is processed twice.
+
+Strictly per-language: a language without its own copy of this file gets no generic
+renaming at all.
+*/
+
+"yeniden gönderilere göre sırala" = "retweetleri sırala";
+"yeniden gönderileri kapat" = "retweetleri kapat";
+"yeniden gönderileri aç" = "retweetleri aç";
+"yeniden gönderiliyor" = "retweetleniyor";
+"yeniden gönderildi" = "retweetlendi";
+"yeniden gönderiler" = "retweetler";
+"yeniden gönderiyi" = "retweet'i";
+"yeniden gönderi" = "retweet";
+"yeniden gönder" = "retweetle";
+
+"gönderi etkileşimlerini" = "tweet etkileşimlerini";
+"gönderi etkinliği" = "tweet etkinliği";
+"gönderi sayısı" = "Tweetler";
+"gönderiliyor" = "tweetleniyor";
+"gönderildi" = "tweetlendi";
+"gönderiler" = "tweetler";
+"gönderiyi" = "tweet'i";
+"gönderi" = "tweet";
+
+"alıntı sayısına göre sırala" = "alıntı tweetleri sırala";
+"alıntıları" = "alıntılanan tweetleri";
+"alıntılar" = "alıntı tweetler";
+"alıntı" = "tweeti alıntıla";
+
+"premium" = "Blue";
+"X" = "Twitter";
